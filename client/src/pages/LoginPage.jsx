@@ -311,7 +311,6 @@ const styles = `
 `;
 
 export default function LoginPage() {
-  const [tab, setTab] = useState('signin');
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = () => {
@@ -412,58 +411,6 @@ export default function LoginPage() {
               <span className="sc-or-text">OR</span>
               <div className="sc-or-line" />
             </div>
-
-            {/* Tabs */}
-            <div className="sc-tabs">
-              <button
-                className={`sc-tab ${tab === 'signin' ? 'active' : ''}`}
-                onClick={() => setTab('signin')}
-              >Sign in</button>
-              <button
-                className={`sc-tab ${tab === 'signup' ? 'active' : ''}`}
-                onClick={() => setTab('signup')}
-              >Sign up</button>
-            </div>
-
-            {/* Sign In */}
-            {tab === 'signin' && (
-              <div>
-                <div className="sc-field">
-                  <label className="sc-field-label">Email Address</label>
-                  <input className="sc-field-input" type="email" placeholder="you@sliit.lk" />
-                </div>
-                <div className="sc-field">
-                  <label className="sc-field-label">Password</label>
-                  <input className="sc-field-input" type="password" placeholder="••••••••" />
-                </div>
-                <button className="sc-btn-primary" onClick={handleSubmit}>
-                  <span>{loading ? 'Please wait...' : 'Sign in'}</span>
-                  <span className="sc-btn-arrow">→</span>
-                </button>
-              </div>
-            )}
-
-            {/* Sign Up */}
-            {tab === 'signup' && (
-              <div>
-                <div className="sc-field">
-                  <label className="sc-field-label">Full Name</label>
-                  <input className="sc-field-input" type="text" placeholder="Kasun Perera" />
-                </div>
-                <div className="sc-field">
-                  <label className="sc-field-label">Email Address</label>
-                  <input className="sc-field-input" type="email" placeholder="you@sliit.lk" />
-                </div>
-                <div className="sc-field">
-                  <label className="sc-field-label">Password</label>
-                  <input className="sc-field-input" type="password" placeholder="••••••••" />
-                </div>
-                <button className="sc-btn-primary" onClick={handleSubmit}>
-                  <span>{loading ? 'Please wait...' : 'Create account'}</span>
-                  <span className="sc-btn-arrow">→</span>
-                </button>
-              </div>
-            )}
 
             <div className="sc-terms">
               By continuing you agree to our <a href="#">Terms of Service</a> and{' '}

@@ -1,28 +1,39 @@
 package com.smartcampus.service;
-
-import com.smartcampus.model.Notification;
-import com.smartcampus.model.User;
+import com.smartcampus.exception.ResourceNotFoundException;
+import com.smartcampus.model.*;
 import com.smartcampus.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 @Service
 public class NotificationService {
-
-    @Autowired
-    private NotificationRepository notificationRepository;
-
-    /**
-     * Centralized method to send notifications.
-     * Called by BookingService, TicketService, etc.
-     */
-    public void send(User recipient, String type, String message) {
-        Notification n = new Notification();
-        n.setRecipient(recipient);
-        n.setType(type);
-        n.setMessage(message);
-        
-        // This persists the notification to the 'notifications' table
-        notificationRepository.save(n);
-    }
+@Autowired
+private NotificationRepository repo;
+/** Called by BookingService and TicketService */
+public void send(User recipient, String type, String msg) {
+Notification n = Notification.builder()
+.recipient(recipient)
+.type(type)
+.message(msg)
+.isRead(false)
+.build();
+repo.save(n);
+}
+public List<Notification> getForUser(Long userId) {
+return repo.findByRecipientIdOrderByCreatedAtDesc(userId);
+}
+public Notification markRead(Long id) {
+Notification n = repo.findById(id).orElseThrow(
+() -> new ResourceNotFoundException(
+"Notification","id",id));
+n.setRead(true);
+return repo.save(n);
+}
+public void markAllRead(Long userId) {
+List<Notification> list =
+repo.findByRecipientIdOrderByCreatedAtDesc(userId);
+list.forEach(n -> n.setRead(true));
+repo.saveAll(list);
+}
+public void delete(Long id) { repo.deleteById(id); }
 }

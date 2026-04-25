@@ -37,6 +37,16 @@ export default function NotificationBell() {
     .catch(err => console.error("Update failed", err));
   };
 
+  const markAllRead = () => {
+    axios.put('/api/notifications/read-all', {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(() => {
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    })
+    .catch(err => console.error("Mark all failed", err));
+  };
+
   return (
     <div className="nb-wrap">
       {/* The Bell Icon / Button */}
@@ -55,8 +65,25 @@ export default function NotificationBell() {
       {/* The Notification Panel */}
       {open && (
         <div className="nb-panel">
-          <div className="nb-header">
+          <div className="nb-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>Notifications</span>
+            {notifications.length > 0 && unreadCount > 0 && (
+              <button
+                onClick={markAllRead}
+                style={{
+                  border: '1px solid #d8ccb8',
+                  background: '#fff',
+                  color: '#6a5746',
+                  fontSize: '10px',
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  padding: '3px 6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Mark all read
+              </button>
+            )}
           </div>
 
           <div className="nb-list">
@@ -73,7 +100,7 @@ export default function NotificationBell() {
                     {n.message}
                   </p>
                   <span className="nb-type">
-                    {n.type}
+                    {n.type} {n.createdAt ? ` • ${new Date(n.createdAt).toLocaleString()}` : ''}
                   </span>
                 </div>
               ))

@@ -1,10 +1,10 @@
-package com.smartcampus.smart_campus_api;
+package com.example.pafproject;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SmartCampusApiApplicationTests {
+class PafprojectApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,4 +1,4 @@
-package com.smartcampus.exception;
+package com.example.pafproject.catalogue.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

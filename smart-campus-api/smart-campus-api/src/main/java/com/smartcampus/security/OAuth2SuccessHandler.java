@@ -3,6 +3,7 @@ package com.smartcampus.security;
 import com.smartcampus.model.User;
 import com.smartcampus.model.enums.Role;
 import com.smartcampus.repository.UserRepository;
+import com.smartcampus.service.NotificationService;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Value("${app.security.admin-confirmation-code:ADMIN2026}")
     private String adminConfirmationCode;
@@ -63,6 +67,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             user.setRole(Role.USER);
         }
         userRepository.save(user);
+
+        notificationService.send(
+                user,
+                "LOGIN_GREETING",
+                "Welcome back, " + (user.getName() == null ? user.getEmail() : user.getName()) + "!"
+        );
 
         clearCookie(response, "sc_requested_role");
         clearCookie(response, "sc_admin_code");

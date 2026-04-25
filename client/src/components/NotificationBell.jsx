@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+  const [activeNotification, setActiveNotification] = useState(null);
   const { token } = useContext(AuthContext);
 
   // 1. Fetch notifications from the backend
@@ -93,7 +94,12 @@ export default function NotificationBell() {
               notifications.map(n => (
                 <div 
                   key={n.id} 
-                  onClick={() => !n.read && markRead(n.id)}
+                  onClick={() => {
+                    if (!n.read) {
+                      markRead(n.id);
+                    }
+                    setActiveNotification(n);
+                  }}
                   className={`nb-item ${!n.read ? 'unread' : ''}`}
                 >
                   <p className="nb-msg">
@@ -106,6 +112,49 @@ export default function NotificationBell() {
               ))
             )}
           </div>
+
+          {activeNotification && (
+            <div
+              style={{
+                borderTop: '1px solid #efe4d3',
+                background: '#fffaf3',
+                padding: '10px 12px',
+                textAlign: 'left'
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '6px'
+                }}
+              >
+                <strong style={{ fontSize: '11px', letterSpacing: '0.8px', color: '#5d4a3a' }}>
+                  Full Message
+                </strong>
+                <button
+                  onClick={() => setActiveNotification(null)}
+                  style={{
+                    border: '1px solid #d8ccb8',
+                    background: '#fff',
+                    color: '#6a5746',
+                    fontSize: '10px',
+                    padding: '2px 6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+              <p style={{ margin: 0, color: '#2e2824', fontSize: '13px', lineHeight: '1.5' }}>
+                {activeNotification.message}
+              </p>
+              <div style={{ marginTop: '6px', color: '#8d7862', fontSize: '10px', letterSpacing: '0.8px' }}>
+                {activeNotification.type} {activeNotification.createdAt ? ` • ${new Date(activeNotification.createdAt).toLocaleString()}` : ''}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

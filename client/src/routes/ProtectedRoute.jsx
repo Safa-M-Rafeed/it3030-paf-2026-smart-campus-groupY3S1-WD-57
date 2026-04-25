@@ -3,9 +3,9 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 /**
- * @param {{ children: React.ReactNode, requiredRole?: string }} props
+ * @param {{ children: React.ReactNode, requiredRole?: string, allowedRoles?: string[] }} props
  */
-export default function ProtectedRoute({ children, requiredRole }) {
+export default function ProtectedRoute({ children, requiredRole, allowedRoles }) {
   const { user, token, loading } = useContext(AuthContext);
 
   // 1. Wait for the AuthProvider to finish checking the token with the backend
@@ -27,6 +27,11 @@ export default function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // 4. Everything is fine, show the protected page
+  // 4. If multiple roles are accepted, verify one matches
+  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // 5. Everything is fine, show the protected page
   return children;
 }

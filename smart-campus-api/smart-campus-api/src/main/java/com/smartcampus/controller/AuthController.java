@@ -14,11 +14,6 @@ public class AuthController {
         return new RedirectView("http://localhost:5173/", true);
     }
 
-    @RequestMapping("/error")
-    public RedirectView handleError() {
-        return new RedirectView("http://localhost:5173/", true);
-    }
-
     @GetMapping("/api/auth/me")
     public ResponseEntity<ApiResponse<?>> getCurrentUser(
             Authentication auth) {

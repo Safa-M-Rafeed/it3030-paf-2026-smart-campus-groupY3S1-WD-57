@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
+import RoleHomeRedirect from './routes/RoleHomeRedirect';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
@@ -28,6 +29,30 @@ function App() {
             {/* Student Protected Routes */}
             <Route path="/" element={
               <ProtectedRoute>
+                <RoleHomeRedirect />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/user/dashboard" element={
+              <ProtectedRoute requiredRole="USER">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/technician/dashboard" element={
+              <ProtectedRoute requiredRole="TECHNICIAN">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/manager/dashboard" element={
+              <ProtectedRoute requiredRole="MANAGER">
                 <DashboardPage />
               </ProtectedRoute>
             } />

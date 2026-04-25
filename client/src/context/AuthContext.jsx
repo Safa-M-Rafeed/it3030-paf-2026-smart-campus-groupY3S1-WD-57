@@ -13,27 +13,54 @@ export function AuthProvider({ children }) {
 
   // On app load, fetch current user if token exists
   useEffect(() => {
+    let isMounted = true;
+
     const fetchUser = async () => {
-      if (token) {
-        try {
-          const res = await axios.get('/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+      if (!token) {
+        if (isMounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (isMounted) {
+        setLoading(true);
+      }
+
+      try {
+        const res = await axios.get('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (isMounted) {
           // Match the ApiResponse structure from your Spring Boot Backend
           setUser(res.data.data);
-        } catch (err) {
-          console.error("Auth failed:", err);
-          logout();
+        }
+      } catch (err) {
+        console.error("Auth failed:", err);
+        if (isMounted) {
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
         }
       }
-      setLoading(false);
     };
 
     fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   const login = (newToken) => {
     localStorage.setItem('token', newToken);
+    setLoading(true);
     setToken(newToken);
   };
 

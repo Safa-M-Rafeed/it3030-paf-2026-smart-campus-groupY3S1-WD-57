@@ -38,15 +38,15 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="relative">
+    <div className="nb-wrap">
       {/* The Bell Icon / Button */}
       <button 
         onClick={() => setOpen(!open)}
-        className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative"
+        className="nb-btn"
       >
-        <span className="text-xl">🔔</span>
+        <span>🔔</span>
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+          <span className="nb-count">
             {unreadCount}
           </span>
         )}
@@ -54,25 +54,25 @@ export default function NotificationBell() {
 
       {/* The Notification Panel */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
-          <div className="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-            <span className="font-semibold text-gray-700 text-sm">Notifications</span>
+        <div className="nb-panel">
+          <div className="nb-header">
+            <span>Notifications</span>
           </div>
 
-          <div className="max-h-64 overflow-y-auto">
+          <div className="nb-list">
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-400 text-sm">No notifications yet</div>
+              <div className="nb-empty">No notifications yet</div>
             ) : (
               notifications.map(n => (
                 <div 
                   key={n.id} 
                   onClick={() => !n.read && markRead(n.id)}
-                  className={`p-3 border-b border-gray-50 cursor-pointer transition-colors hover:bg-gray-50 ${!n.read ? 'bg-blue-50/50' : ''}`}
+                  className={`nb-item ${!n.read ? 'unread' : ''}`}
                 >
-                  <p className={`text-sm ${!n.read ? 'font-bold text-gray-900' : 'text-gray-600'}`}>
+                  <p className="nb-msg">
                     {n.message}
                   </p>
-                  <span className="text-[10px] text-gray-400">
+                  <span className="nb-type">
                     {n.type}
                   </span>
                 </div>

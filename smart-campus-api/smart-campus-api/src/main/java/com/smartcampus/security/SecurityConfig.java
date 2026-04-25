@@ -26,17 +26,11 @@ public class SecurityConfig {
 
         http
             .csrf(c -> c.disable())
-            // OAuth2 login requires a temporary session to keep authorization state.
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(a -> a
                     .requestMatchers("/", "/error").permitAll()
-                    .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                    .requestMatchers("/api/auth/me").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
-                    .requestMatchers("/api/notifications/**")
-                        .hasAnyRole("USER", "ADMIN", "TECHNICIAN", "MANAGER")
+                    .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
                     .anyRequest().authenticated()

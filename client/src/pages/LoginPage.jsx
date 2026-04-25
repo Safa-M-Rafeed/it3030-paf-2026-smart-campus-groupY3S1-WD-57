@@ -311,20 +311,16 @@ const styles = `
 `;
 
 export default function LoginPage() {
-  const [selectedRole, setSelectedRole] = useState('USER');
-  const [adminCode, setAdminCode] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleGoogle = () => {
-    if (selectedRole === 'ADMIN' && !adminCode.trim()) {
-      setError('Admin confirmation code is required for ADMIN access.');
-      return;
-    }
-    setError('');
-    document.cookie = `sc_requested_role=${selectedRole}; path=/; max-age=600`;
-    document.cookie = `sc_admin_code=${encodeURIComponent(adminCode || '')}; path=/; max-age=600`;
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
     window.location.href = `${apiBaseUrl}/oauth2/authorization/google`;
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
@@ -397,37 +393,8 @@ export default function LoginPage() {
               Welcome<br /><em>back.</em>
             </div>
             <div className="sc-form-sub">
-              Select your role, complete verification for privileged access, then continue with Google.
+              Sign in to your campus account to continue.
             </div>
-
-            <div className="sc-field">
-              <label className="sc-field-label">Select role</label>
-              <select
-                className="sc-field-input"
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              >
-                <option value="USER">USER</option>
-                <option value="TECHNICIAN">TECHNICIAN</option>
-                <option value="MANAGER">MANAGER</option>
-                <option value="ADMIN">ADMIN</option>
-              </select>
-            </div>
-
-            {selectedRole === 'ADMIN' && (
-              <div className="sc-field">
-                <label className="sc-field-label">Admin confirmation code</label>
-                <input
-                  className="sc-field-input"
-                  type="password"
-                  placeholder="Enter admin confirmation code"
-                  value={adminCode}
-                  onChange={(e) => setAdminCode(e.target.value)}
-                />
-              </div>
-            )}
-
-            {error && <p style={{ color: '#b42318', fontSize: '12px', marginBottom: '10px' }}>{error}</p>}
 
             {/* Google OAuth */}
             <button className="sc-btn-google" onClick={handleGoogle}>

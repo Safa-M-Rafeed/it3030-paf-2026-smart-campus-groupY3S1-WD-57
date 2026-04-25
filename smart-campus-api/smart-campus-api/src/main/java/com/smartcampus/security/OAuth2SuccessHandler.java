@@ -1,7 +1,7 @@
 package com.smartcampus.security;
 
-import com.smartcampus.model.enums.Role;
 import com.smartcampus.model.User;
+import com.smartcampus.model.enums.Role;
 import com.smartcampus.repository.UserRepository;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,11 @@ import java.io.IOException;
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public void onAuthenticationSuccess(

@@ -21,7 +21,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // ✅ FIXED: used by OAuth2SuccessHandler
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -32,7 +31,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ FIXED: used by JwtFilter
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -42,7 +40,6 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // ✅ FIXED: used by JwtFilter
     public boolean validateToken(String token) {
         try {
             extractEmail(token);

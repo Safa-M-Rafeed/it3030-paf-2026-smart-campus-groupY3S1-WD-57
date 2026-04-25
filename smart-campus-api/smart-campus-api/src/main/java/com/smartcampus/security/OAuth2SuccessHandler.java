@@ -8,6 +8,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 // --- CRITICAL IMPORTS TO FIX ERRORS ---
 import com.smartcampus.repository.UserRepository;
@@ -49,6 +51,26 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // Generate JWT and redirect to frontend with token
         String token = jwtUtil.generateToken(email, user.getRole().name());
-        response.sendRedirect("http://localhost:5173/auth/callback?token=" + token);
+        String frontendBaseUrl = resolveFrontendBaseUrl(request);
+        response.sendRedirect(frontendBaseUrl + "/auth/callback?token=" + token);
+    }
+
+    private String resolveFrontendBaseUrl(HttpServletRequest request) {
+        String originHeader = request.getHeader("Origin");
+        if (originHeader != null && !originHeader.isBlank()) {
+            return originHeader;
+        }
+
+        String refererHeader = request.getHeader("Referer");
+        if (refererHeader != null && !refererHeader.isBlank()) {
+            try {
+                URI uri = new URI(refererHeader);
+                return uri.getScheme() + "://" + uri.getAuthority();
+            } catch (URISyntaxException ignored) {
+                // Fall through to default
+            }
+        }
+
+        return "http://localhost:5173";
     }
 }

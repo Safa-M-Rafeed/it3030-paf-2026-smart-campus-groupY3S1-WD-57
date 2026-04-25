@@ -314,7 +314,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = () => {
-    window.location.href = 'http://localhost:8081/oauth2/authorization/google';
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    window.location.href = `${apiBaseUrl}/oauth2/authorization/google`;
   };
 
   const handleSubmit = () => {

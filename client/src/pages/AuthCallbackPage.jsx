@@ -16,7 +16,7 @@ export default function AuthCallbackPage() {
       login(token);
       
       // 3. Redirect to the main dashboard or home page
-      navigate('/dashboard'); 
+      navigate('/'); 
     } else {
       // 4. If no token is found, something went wrong, send back to login
       console.error("No token found in callback URL");

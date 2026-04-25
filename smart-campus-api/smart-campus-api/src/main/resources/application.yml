@@ -13,6 +13,7 @@ spring:
             scope:
               - email
               - profile
+            redirect-uri: "http://localhost:8081/login/oauth2/code/google"
 
   datasource:
     url: jdbc:postgresql://localhost:5432/smart_campus
@@ -27,3 +28,10 @@ spring:
 
 server:
   port: 8081  # Keep it as 8081
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:SmartCampusJwtSecretKeyForDevOnlyMustBeLongEnough12345}
+    expiration: ${JWT_EXPIRATION:86400000}
+  security:
+    admin-confirmation-code: ${ADMIN_CONFIRMATION_CODE:ADMIN2026}

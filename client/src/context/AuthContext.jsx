@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Set the base URL for your Spring Boot backend
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
 export const AuthContext = createContext();
 

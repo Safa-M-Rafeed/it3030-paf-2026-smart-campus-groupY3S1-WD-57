@@ -5,7 +5,7 @@ import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
 import StatusDashboard from './components/StatusDashboard';
 import LocationModal from './components/LocationModal';
-import { resourceService } from './services/resourceService';
+import { addResource, editResource, getResources, removeResource } from './facilitiesApi';
 import { facilityOptions } from './facilityOptions';
 
 const FacilitiesPage = () => {
@@ -32,29 +32,43 @@ const FacilitiesPage = () => {
   // Load resources and stats on mount
   useEffect(() => {
     loadResources();
-    loadDashboardStats();
   }, []);
+
+  useEffect(() => {
+    setStats(buildDashboardStats(resources));
+  }, [resources]);
+
+  const buildDashboardStats = (items) => {
+    const total = items.length;
+    const active = items.filter((r) => r.status === 'ACTIVE').length;
+    const outOfService = items.filter((r) => r.status === 'OUT_OF_SERVICE').length;
+
+    const typeBreakdown = {
+      LECTURE_HALL: items.filter((r) => r.type === 'LECTURE_HALL').length,
+      LAB: items.filter((r) => r.type === 'LAB').length,
+      EQUIPMENT: items.filter((r) => r.type === 'EQUIPMENT').length,
+    };
+
+    return {
+      total,
+      active,
+      outOfService,
+      typeBreakdown,
+      utilizationRate: total > 0 ? Math.round((active / total) * 100) : 0,
+    };
+  };
 
   const loadResources = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await resourceService.getResources();
+      const data = await getResources();
       setResources(data);
     } catch (err) {
       setError(err.message || 'Failed to load resources');
       console.error('Error loading resources:', err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const loadDashboardStats = async () => {
-    try {
-      const dashboardStats = await resourceService.getDashboardStats();
-      setStats(dashboardStats);
-    } catch (err) {
-      console.error('Error loading dashboard stats:', err);
     }
   };
 
@@ -102,7 +116,7 @@ const FacilitiesPage = () => {
     try {
       if (selectedResource) {
         // Edit existing
-        const updated = await resourceService.updateResource(
+        const updated = await editResource(
           selectedResource.id,
           formData
         );
@@ -111,11 +125,10 @@ const FacilitiesPage = () => {
         );
       } else {
         // Create new
-        const created = await resourceService.createResource(formData);
+        const created = await addResource(formData);
         setResources([...resources, created]);
       }
       closeModal();
-      loadDashboardStats();
     } catch (err) {
       setError(err.message || 'Failed to save resource');
     }
@@ -123,9 +136,8 @@ const FacilitiesPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await resourceService.deleteResource(id);
+      await removeResource(id);
       setResources(resources.filter((r) => r.id !== id));
-      loadDashboardStats();
     } catch (err) {
       setError(err.message || 'Failed to delete resource');
     }

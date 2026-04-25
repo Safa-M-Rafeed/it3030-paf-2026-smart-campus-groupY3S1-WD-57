@@ -87,7 +87,7 @@ export default function ResourceCard({ resource, onEdit, onDelete }) {
         </button>
         <button
           type="button"
-          onClick={() => onDelete(resource)}
+          onClick={() => onDelete(resource.id)}
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-2.5 text-sm font-semibold text-rose-200 transition hover:bg-rose-400/15"
         >
           <Trash2 className="h-4.5 w-4.5" />

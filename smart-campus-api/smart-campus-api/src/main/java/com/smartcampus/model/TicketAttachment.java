@@ -1,6 +1,7 @@
 package com.smartcampus.model;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "ticket_attachments")
@@ -19,6 +20,7 @@ private String filePath;
 private String originalFileName;
 @Column(name = "content_type")
 private String contentType;
-@Column(name = "uploaded_at")
-private LocalDateTime uploadedAt = LocalDateTime.now();
+@CreationTimestamp
+@Column(name = "uploaded_at", nullable = false, updatable = false)
+private LocalDateTime uploadedAt;
 }

@@ -18,5 +18,6 @@ private User author;
 @Column(nullable = false, length = 1000)
 private String content;
 @Column(name = "created_at")
+@Builder.Default
 private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -11,9 +11,10 @@ import java.util.List;
 @Table(name = "incident_tickets")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class IncidentTicket {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 // Which facility/room this incident relates to
 @Column(name = "facility_name")
 private String facilityName;

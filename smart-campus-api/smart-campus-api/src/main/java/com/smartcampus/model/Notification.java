@@ -19,7 +19,9 @@ private String type;
 @Column(nullable = false, length = 500)
 private String message;
 @Column(name = "is_read", nullable = false)
-private boolean isRead = false;
+@Builder.Default
+private boolean read = false;
 @Column(name = "created_at")
+@Builder.Default
 private LocalDateTime createdAt = LocalDateTime.now();
 }

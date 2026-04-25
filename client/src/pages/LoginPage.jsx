@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@600;700;800&display=swap');
@@ -311,17 +313,46 @@ const styles = `
 `;
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
+  const { token, user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState('USER');
+  const [adminCode, setAdminCode] = useState('');
+  const [error, setError] = useState('');
+
+  const roleDashboardPath = (role) => {
+    switch (role) {
+      case 'ADMIN':
+        return '/admin/dashboard';
+      case 'TECHNICIAN':
+        return '/technician/dashboard';
+      case 'MANAGER':
+        return '/manager/dashboard';
+      default:
+        return '/user/dashboard';
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && token) {
+      navigate(roleDashboardPath(user?.role), { replace: true });
+    }
+  }, [loading, token, user, navigate]);
 
   const handleGoogle = () => {
+    if (selectedRole === 'ADMIN' && !adminCode.trim()) {
+      setError('Admin confirmation code is required for ADMIN access.');
+      return;
+    }
+    setError('');
+    document.cookie = `sc_requested_role=${selectedRole}; path=/; max-age=600`;
+    document.cookie = `sc_admin_code=${encodeURIComponent(adminCode || '')}; path=/; max-age=600`;
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
     window.location.href = `${apiBaseUrl}/oauth2/authorization/google`;
   };
 
-  const handleSubmit = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
-  };
+  if (loading) {
+    return null;
+  }
 
   return (
     <>
@@ -393,8 +424,41 @@ export default function LoginPage() {
               Welcome<br /><em>back.</em>
             </div>
             <div className="sc-form-sub">
-              Sign in to your campus account to continue.
+              Select your role and continue with Google.
             </div>
+
+            <div className="sc-field">
+              <label className="sc-field-label">Select role</label>
+              <select
+                className="sc-field-input"
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              >
+                <option value="USER">USER</option>
+                <option value="TECHNICIAN">TECHNICIAN</option>
+                <option value="MANAGER">MANAGER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+
+            {selectedRole === 'ADMIN' && (
+              <div className="sc-field">
+                <label className="sc-field-label">Admin confirmation code</label>
+                <input
+                  className="sc-field-input"
+                  type="password"
+                  placeholder="Enter admin confirmation code"
+                  value={adminCode}
+                  onChange={(e) => setAdminCode(e.target.value)}
+                />
+              </div>
+            )}
+
+            {error && (
+              <p style={{ color: '#b42318', fontSize: '12px', marginBottom: '10px' }}>
+                {error}
+              </p>
+            )}
 
             {/* Google OAuth */}
             <button className="sc-btn-google" onClick={handleGoogle}>

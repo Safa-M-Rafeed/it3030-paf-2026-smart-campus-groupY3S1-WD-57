@@ -1,12 +1,11 @@
 package com.smartcampus.security;
 
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -18,33 +17,32 @@ public class JwtUtil {
     @Value("${app.jwt.expiration}")
     private long expiration;
 
-    // Helper to generate the secure key
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    // ✅ FIXED: used by OAuth2SuccessHandler
     public String generateToken(String email, String role) {
         return Jwts.builder()
-                .subject(email) // FIX: subject() instead of setSubject()
+                .setSubject(email)
                 .claim("role", role)
-                .issuedAt(new Date()) // FIX: issuedAt() instead of setIssuedAt()
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey()) // FIX: Removed deprecated SignatureAlgorithm
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ✅ FIXED: used by JwtFilter
     public String extractEmail(String token) {
-        // FIX: Use parser() instead of parserBuilder()
-        // FIX: Use verifyWith() instead of setSigningKey()
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseSignedClaims(token) // FIX: parseSignedClaims instead of parseClaimsJws
-                .getPayload() // FIX: getPayload() instead of getBody()
+                .parseClaimsJws(token)
+                .getBody()
                 .getSubject();
     }
 
+    // ✅ FIXED: used by JwtFilter
     public boolean validateToken(String token) {
         try {
             extractEmail(token);

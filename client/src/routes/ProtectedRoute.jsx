@@ -2,6 +2,9 @@ import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
+/**
+ * @param {{ children: React.ReactNode, requiredRole?: string }} props
+ */
 export default function ProtectedRoute({ children, requiredRole }) {
   const { user, token, loading } = useContext(AuthContext);
 

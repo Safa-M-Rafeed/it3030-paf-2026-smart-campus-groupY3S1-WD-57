@@ -1,14 +1,8 @@
-// @ts-ignore
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// @ts-ignore
 import { AuthProvider } from './context/AuthContext';
-// @ts-ignore
 import ProtectedRoute from './routes/ProtectedRoute';
-// @ts-ignore
 import Navbar from './components/Navbar';
-// @ts-ignore
 import LoginPage from './pages/LoginPage';
-// @ts-ignore
 import AuthCallbackPage from './pages/AuthCallbackPage';
 
 

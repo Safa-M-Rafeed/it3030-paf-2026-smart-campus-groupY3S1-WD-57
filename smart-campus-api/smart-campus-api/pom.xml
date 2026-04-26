@@ -88,8 +88,6 @@
             <scope>test</scope>
         </dependency>
 
-<<<<<<< HEAD
-=======
         <!-- 🔐 JWT (FIX ADDED) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -110,12 +108,10 @@
             <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
->>>>>>> b9829a34ac2c827600733d96cf2675c767dd9906
 
     </dependencies>
 
     <build>
-<<<<<<< HEAD
     <plugins>
         <plugin>
             <groupId>org.springframework.boot</groupId>
@@ -145,7 +141,6 @@
         </plugin>
     </plugins>
 </build>
-=======
         <plugins>
 
             <plugin>
@@ -168,6 +163,5 @@
 
         </plugins>
     </build>
->>>>>>> b9829a34ac2c827600733d96cf2675c767dd9906
 
 </project>

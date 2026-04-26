@@ -15,6 +15,7 @@ import TicketListPage from './pages/TicketListPage';
 import TicketDetailPage from './pages/TicketDetailPage';
 import TicketFormPage from './pages/TicketFormPage';
 import AuditTrailPage from './pages/AuditTrailPage';
+import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -158,10 +159,7 @@ function App() {
 
             <Route path="/reports/analytics-dashboard" element={
               <ProtectedRoute requiredRole="ADMIN">
-                <ReportSectionPage
-                  title="Analytics Dashboard"
-                  description="Track trends, usage summaries, and operational health indicators for Module F."
-                />
+                <AnalyticsDashboardPage />
               </ProtectedRoute>
             } />
 

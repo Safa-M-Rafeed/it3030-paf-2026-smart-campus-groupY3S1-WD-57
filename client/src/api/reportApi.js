@@ -21,3 +21,12 @@ export const getAuditTrail = (token, filters = {}) =>
 
 export const deleteAuditTrailEntry = (id, token) =>
   axios.delete(`${BASE}/${id}`, authHeader(token));
+
+export const getAnalyticsDashboard = (token, filters = {}) =>
+  axios.get(`${API_BASE}/api/reports/analytics-dashboard`, {
+    ...authHeader(token),
+    params: {
+      fromDate: filters.fromDate || undefined,
+      toDate: filters.toDate || undefined,
+    },
+  });

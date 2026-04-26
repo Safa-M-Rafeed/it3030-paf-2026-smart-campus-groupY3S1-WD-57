@@ -1,17 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
+import RoleHomeRedirect from './routes/RoleHomeRedirect';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import DashboardPage from './pages/DashboardPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 
-
-// Placeholder Pages (Create these files in src/pages/ if they don't exist)
-const HomePage = () => <div className="p-8"><h1>Welcome to Smart Campus</h1></div>;
-const FacilitiesPage = () => <div className="p-8"><h1>Campus Facilities</h1></div>;
-const BookingsPage = () => <div className="p-8"><h1>My Bookings</h1></div>;
-const TicketsPage = () => <div className="p-8"><h1>Support Tickets</h1></div>;
-const AdminUsersPage = () => <div className="p-8"><h1>Admin: User Management</h1></div>;
+const FacilitiesPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Facilities</h1><p className="mt-2 text-gray-600">Catalogue module integration point (Module A).</p></div>;
+const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
+const TicketsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Tickets</h1><p className="mt-2 text-gray-600">Incident and maintenance workflow integration point (Module C).</p></div>;
 
 function App() {
   return (
@@ -29,7 +29,31 @@ function App() {
             {/* Student Protected Routes */}
             <Route path="/" element={
               <ProtectedRoute>
-                <HomePage />
+                <RoleHomeRedirect />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/user/dashboard" element={
+              <ProtectedRoute requiredRole="USER">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/technician/dashboard" element={
+              <ProtectedRoute requiredRole="TECHNICIAN">
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/manager/dashboard" element={
+              <ProtectedRoute requiredRole="MANAGER">
+                <DashboardPage />
               </ProtectedRoute>
             } />
             
@@ -55,6 +79,12 @@ function App() {
             <Route path="/admin/users" element={
               <ProtectedRoute requiredRole="ADMIN">
                 <AdminUsersPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/unauthorized" element={
+              <ProtectedRoute>
+                <UnauthorizedPage />
               </ProtectedRoute>
             } />
 

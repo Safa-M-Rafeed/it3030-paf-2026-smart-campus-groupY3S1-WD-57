@@ -1,26 +1,45 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
+import './nav-theme.css';
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (!user) return null; // Don't show navbar on login page
 
+  const dashboardPath = user.role === 'ADMIN'
+    ? '/admin/dashboard'
+    : user.role === 'TECHNICIAN'
+      ? '/technician/dashboard'
+      : user.role === 'MANAGER'
+        ? '/manager/dashboard'
+        : '/user/dashboard';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
-    <nav className="bg-white shadow-md p-4 flex justify-between items-center">
-      <div className="flex gap-6">
-        <Link to="/" className="font-bold text-blue-600">Smart Campus</Link>
-        <Link to="/facilities">Facilities</Link>
-        <Link to="/bookings">Bookings</Link>
-        {user.role === 'ADMIN' && <Link to="/admin/users">Users</Link>}
+    <nav className="sc-nav">
+      <div className="sc-nav-left">
+        <Link to={dashboardPath} className="sc-nav-brand">Smart Campus Hub</Link>
+        <Link className="sc-nav-link" to={dashboardPath}>Dashboard</Link>
+        <Link className="sc-nav-link" to="/facilities">Facilities</Link>
+        <Link className="sc-nav-link" to="/bookings">Bookings</Link>
+        <Link className="sc-nav-link" to="/tickets">Tickets</Link>
+        {user.role === 'ADMIN' && <Link className="sc-nav-link" to="/admin/users">Users</Link>}
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="sc-nav-right">
         <NotificationBell />
-        <span className="text-sm text-gray-500">{user.email}</span>
-        <button onClick={logout} className="text-red-500 text-sm">Logout</button>
+        <span className="sc-role-badge">{user.role}</span>
+        <span className="sc-user-email">{user.email}</span>
+        <button onClick={handleLogout} className="sc-logout-btn">Logout</button>
       </div>
     </nav>
   );

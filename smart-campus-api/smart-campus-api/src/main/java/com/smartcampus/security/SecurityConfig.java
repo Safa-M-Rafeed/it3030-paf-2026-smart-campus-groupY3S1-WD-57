@@ -29,6 +29,7 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(a -> a
+                    .requestMatchers("/", "/error").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()

@@ -15,6 +15,7 @@ import java.util.List;
 @Service
 public class TicketService {
     @Autowired private NotificationService notifService;
+    @Autowired private AuditTrailService auditTrailService;
     @Autowired private TicketRepository ticketRepo;
     @Autowired private TicketAttachmentRepository attachRepo;
     @Autowired private UserRepository userRepo;
@@ -46,6 +47,15 @@ public class TicketService {
                 .build();
 
         ticketRepo.save(ticket);
+        auditTrailService.logEvent(
+                reporter.getEmail(),
+                "TICKET_CREATED",
+                "TICKET",
+                "Ticket #" + ticket.getId(),
+                null,
+                "status=" + ticket.getStatus(),
+                "Incident ticket created"
+        );
 
         // Save attachments if provided
         if (files != null && !files.isEmpty()) {
@@ -94,6 +104,7 @@ public class TicketService {
     @Transactional
     public IncidentTicket updateStatus(Long id, String newStatus, String resolutionNote, User caller) {
         IncidentTicket ticket = getById(id);
+        TicketStatus oldStatus = ticket.getStatus();
         TicketStatus targetStatus = TicketStatus.valueOf(newStatus.toUpperCase());
 
         boolean isAdmin = caller.getRole().name().equals("ADMIN");
@@ -129,6 +140,15 @@ public class TicketService {
             "TICKET_UPDATE",
             "Your ticket #" + id + " status changed to " + newStatus
         );
+        auditTrailService.logEvent(
+                caller.getEmail(),
+                "TICKET_STATUS_CHANGED",
+                "TICKET",
+                "Ticket #" + id,
+                oldStatus.name(),
+                targetStatus.name(),
+                resolutionNote
+        );
 
         // 3. Finally return the object
         return updatedTicket;
@@ -159,7 +179,17 @@ public class TicketService {
         
         ticket.setAssignedTechnician(tech);
         ticket.setStatus(TicketStatus.IN_PROGRESS);
-        return ticketRepo.save(ticket);
+        IncidentTicket updated = ticketRepo.save(ticket);
+        auditTrailService.logEvent(
+                "SYSTEM",
+                "TICKET_ASSIGNED",
+                "TICKET",
+                "Ticket #" + ticketId,
+                null,
+                tech.getEmail(),
+                "Assigned technician and moved to IN_PROGRESS"
+        );
+        return updated;
     }
 
     /** DELETE /{id} — owner or ADMIN may delete */

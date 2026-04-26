@@ -33,6 +33,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
+                    .requestMatchers("/api/resources/**").permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2Login(o -> o.successHandler(successHandler))

@@ -1,13 +1,13 @@
 package com.smartcampus.model;
 
 import com.smartcampus.model.enums.Role;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,17 +16,14 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
     private String email;
 
     private String name;
 
     private String profilePicture;
 
-    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Builder.Default

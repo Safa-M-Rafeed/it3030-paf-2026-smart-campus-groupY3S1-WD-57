@@ -8,8 +8,10 @@ import AuthCallbackPage from './pages/AuthCallbackPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import ResourceList from './pages/ResourceList';
+import ResourceForm from './pages/ResourceForm';
+import ResourceDetail from './pages/ResourceDetail';
 
-const FacilitiesPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Facilities</h1><p className="mt-2 text-gray-600">Catalogue module integration point (Module A).</p></div>;
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 const TicketsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Tickets</h1><p className="mt-2 text-gray-600">Incident and maintenance workflow integration point (Module C).</p></div>;
 
@@ -57,11 +59,13 @@ function App() {
               </ProtectedRoute>
             } />
             
-            <Route path="/facilities" element={
-              <ProtectedRoute>
-                <FacilitiesPage />
-              </ProtectedRoute>
-            } />
+            <Route path="/facilities" element={<ResourceList />} />
+
+            <Route path="/facilities/new" element={<ResourceForm />} />
+
+            <Route path="/facilities/:id" element={<ResourceDetail />} />
+
+            <Route path="/facilities/:id/edit" element={<ResourceForm />} />
             
             <Route path="/bookings" element={
               <ProtectedRoute>

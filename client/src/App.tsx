@@ -16,6 +16,7 @@ import TicketDetailPage from './pages/TicketDetailPage';
 import TicketFormPage from './pages/TicketFormPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
+const ReportsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Reports & Analytics</h1><p className="mt-2 text-gray-600">Reports and analytics workspace for Module F.</p></div>;
 
 function App() {
   return (
@@ -72,6 +73,12 @@ function App() {
             <Route path="/bookings" element={
               <ProtectedRoute>
                 <BookingsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <ReportsPage />
               </ProtectedRoute>
             } />
             

@@ -326,6 +326,7 @@ const roleCards = {
     { title: 'User Management', desc: 'Manage roles for users, technicians, and managers.', path: '/admin/users', tag: 'Module E' },
     { title: 'All Bookings', desc: 'Review requests and approve or reject bookings.', path: '/bookings', tag: 'Module B' },
     { title: 'Incidents Overview', desc: 'Monitor ticket lifecycle and technician updates.', path: '/tickets', tag: 'Module C' },
+    { title: 'Reports & Analytics', desc: 'Review operational insights, trends, and system summaries.', path: '/reports', tag: 'Module F' },
   ],
 };
 

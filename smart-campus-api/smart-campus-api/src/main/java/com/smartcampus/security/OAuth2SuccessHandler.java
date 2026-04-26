@@ -32,6 +32,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${app.security.admin-confirmation-code:ADMIN2026}")
     private String adminConfirmationCode;
 
+    @Value("${app.frontend-base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -82,7 +85,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 user.getRole().name()
         );
 
-        String redirect = "http://localhost:5173/auth/callback?token=" + token;
+        String redirect = frontendBaseUrl + "/auth/callback?token=" + token;
         if (roleMessage != null) {
             redirect += "&msg=" + URLEncoder.encode(roleMessage, StandardCharsets.UTF_8);
         }

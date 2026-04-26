@@ -14,7 +14,7 @@ Long userId);
 List<IncidentTicket> findByStatusOrderByCreatedAtDesc(
 TicketStatus status);
 // Tickets assigned to a specific technician
-List<IncidentTicket> findByAssignedTechnicianId(
+List<IncidentTicket> findByAssignedTechnicianIdOrderByCreatedAtDesc(
 Long technicianId);
 
 List<IncidentTicket> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to);

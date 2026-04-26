@@ -9,8 +9,10 @@ const [editingText, setEditingText] = useState('');
 const [error, setError] = useState('');
 const { token, user } = useContext(AuthContext);
 const loadComments = () =>
-getTicket(ticketId, token).then(r => setComments(r.data.data?.comments || []));
-useEffect(() => { loadComments(); }, [ticketId]);
+getTicket(ticketId, token)
+.then(r => setComments(r.data.data?.comments || []))
+.catch((e) => setError(e.response?.data?.message || 'Failed to load comments'));
+useEffect(() => { if (token) loadComments(); }, [ticketId, token]);
 const handleAdd = async () => {
 if (!newText.trim()) return;
 try {

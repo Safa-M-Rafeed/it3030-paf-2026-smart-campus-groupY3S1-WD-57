@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NotificationService {
@@ -86,5 +87,34 @@ public class NotificationService {
                 .message(message)
                 .build();
         return repo.save(n);
+    }
+
+    public List<Notification> seedDemoNotificationsForUser(User actor) {
+        String actorName = actor.getName() == null || actor.getName().isBlank() ? actor.getEmail() : actor.getName();
+
+        List<Notification> demo = List.of(
+                Notification.builder()
+                        .recipient(actor)
+                        .type(NotificationEventType.BOOKING_APPROVED.name())
+                        .message("Your booking was approved by " + actorName + " [BK-104] - Lab 3 access confirmed")
+                        .build(),
+                Notification.builder()
+                        .recipient(actor)
+                        .type(NotificationEventType.BOOKING_REJECTED.name())
+                        .message("Your booking was rejected by " + actorName + " [BK-102] - Timeslot conflict")
+                        .build(),
+                Notification.builder()
+                        .recipient(actor)
+                        .type(NotificationEventType.TICKET_STATUS_CHANGED.name())
+                        .message("Your ticket status changed by " + actorName + " [TK-221] - Marked as IN_PROGRESS")
+                        .build(),
+                Notification.builder()
+                        .recipient(actor)
+                        .type(NotificationEventType.TICKET_COMMENT_ADDED.name())
+                        .message("New comment on your ticket from " + actorName + " [TK-221] - Technician requested logs")
+                        .build()
+        );
+
+        return repo.saveAll(demo).stream().filter(Objects::nonNull).toList();
     }
 }

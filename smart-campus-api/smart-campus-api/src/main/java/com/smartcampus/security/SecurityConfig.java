@@ -30,8 +30,10 @@ public class SecurityConfig {
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(a -> a
                     .requestMatchers("/", "/error").permitAll()
+                    .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/uploads/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
                     .anyRequest().authenticated()
             )
@@ -45,8 +47,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:5173"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE"));
+        cfg.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
 

@@ -1,0 +1,4 @@
+[33m95dcc49[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;32mfeature/member4-notifications[m[33m)[m refactor(security): remove @Autowired annotations from JwtFilter
+[33mf458872[m Small changes made
+[33mafb4074[m feat(client): initialize React app with Vite, add main components and configuration
+[33mea62ed3[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mmaster[m[33m)[m feat: phase 0 complete - base project setup

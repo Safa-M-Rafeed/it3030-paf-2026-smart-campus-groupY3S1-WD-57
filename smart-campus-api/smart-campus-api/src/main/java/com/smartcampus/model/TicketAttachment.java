@@ -1,0 +1,28 @@
+package com.smartcampus.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+@Entity
+@Table(name = "ticket_attachments")
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
+public class TicketAttachment {
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "ticket_id", nullable = false)
+@JsonIgnore
+private IncidentTicket ticket;
+// Relative path stored in DB: e.g. 'uploads/abc123.jpg'
+@Column(name = "file_path", nullable = false)
+private String filePath;
+@Column(name = "original_file_name")
+private String originalFileName;
+@Column(name = "content_type")
+private String contentType;
+@CreationTimestamp
+@Column(name = "uploaded_at", nullable = false, updatable = false)
+private LocalDateTime uploadedAt;
+}

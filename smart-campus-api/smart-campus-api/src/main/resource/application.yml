@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: smart-campus-api
+  
+  # ADD THIS SECTION
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 163190998619-m2kb7ahfqg4tbr9f9fuqarmusutc9o0p.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+            redirect-uri: "http://localhost:8081/login/oauth2/code/google"
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smart_campus
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8081  # Keep it as 8081
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:SmartCampusJwtSecretKeyForDevOnlyMustBeLongEnough12345}
+    expiration: ${JWT_EXPIRATION:86400000}
+  security:
+    admin-confirmation-code: ${ADMIN_CONFIRMATION_CODE:ADMIN2026}

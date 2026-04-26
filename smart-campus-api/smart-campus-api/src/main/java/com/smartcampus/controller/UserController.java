@@ -23,7 +23,7 @@ userRepo.findAll(), "All users"));
 @PutMapping("/{id}/role")
 @PreAuthorize("hasRole('ADMIN')")
 public ResponseEntity<ApiResponse<?>> changeRole(
-@PathVariable String id,
+@PathVariable Long id,
 @RequestBody RoleUpdateDto dto) {
 User user = userRepo.findById(id).orElseThrow(
 () -> new ResourceNotFoundException("User","id",id));

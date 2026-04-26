@@ -8,7 +8,7 @@ import lombok.Data;
 public class NotificationEventRequest {
 
     @NotNull
-    private String recipientUserId;
+    private Long recipientUserId;
 
     @NotNull
     private NotificationEventType eventType;

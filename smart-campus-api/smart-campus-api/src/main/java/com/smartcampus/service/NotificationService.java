@@ -34,11 +34,11 @@ public class NotificationService {
         repo.save(n);
     }
 
-    public List<Notification> getForUser(String userId) {
+    public List<Notification> getForUser(Long userId) {
         return repo.findByRecipientIdOrderByCreatedAtDesc(userId);
     }
 
-    public Notification markRead(String id, String actorUserId) {
+    public Notification markRead(Long id, Long actorUserId) {
         Notification n = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
 
@@ -50,13 +50,13 @@ public class NotificationService {
         return repo.save(n);
     }
 
-    public void markAllRead(String userId) {
+    public void markAllRead(Long userId) {
         List<Notification> list = repo.findByRecipientIdOrderByCreatedAtDesc(userId);
         list.forEach(n -> n.setRead(true));
         repo.saveAll(list);
     }
 
-    public void delete(String id, String actorUserId) {
+    public void delete(Long id, Long actorUserId) {
         Notification n = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
         if (!n.getRecipient().getId().equals(actorUserId)) {

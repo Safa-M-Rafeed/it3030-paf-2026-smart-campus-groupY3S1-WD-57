@@ -1,6 +1,9 @@
 spring:
   application:
     name: smart-campus-api
+
+  mongodb:
+    uri: mongodb+srv://evon:EVON1234@cluster1.via4f4a.mongodb.net/smart_campus?retryWrites=true&w=majority&appName=Cluster1
   
   # ADD THIS SECTION
   security:
@@ -15,16 +18,9 @@ spring:
               - profile
             redirect-uri: "http://localhost:8081/login/oauth2/code/google"
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/smart_campus
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  data:
+    mongodb:
+      uri: mongodb+srv://evon:EVON1234@cluster1.via4f4a.mongodb.net/smart_campus?retryWrites=true&w=majority&appName=Cluster1
 
 server:
   port: 8081  # Keep it as 8081

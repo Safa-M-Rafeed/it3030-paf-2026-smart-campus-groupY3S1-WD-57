@@ -6,6 +6,7 @@ import com.smartcampus.model.Resource;
 import com.smartcampus.model.enums.ResourceStatus;
 import com.smartcampus.model.enums.ResourceType;
 import com.smartcampus.repository.ResourceRepository;
+import com.smartcampus.service.AuditTrailService;
 import com.smartcampus.service.ResourceService;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,11 @@ import java.util.List;
 public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceRepository resourceRepository;
+    private final AuditTrailService auditTrailService;
 
-    public ResourceServiceImpl(ResourceRepository resourceRepository) {
+    public ResourceServiceImpl(ResourceRepository resourceRepository, AuditTrailService auditTrailService) {
         this.resourceRepository = resourceRepository;
+        this.auditTrailService = auditTrailService;
     }
 
     @Override
@@ -30,7 +33,17 @@ public class ResourceServiceImpl implements ResourceService {
         entity.setCreatedAt(now);
         entity.setUpdatedAt(now);
 
-        return toDTO(resourceRepository.save(entity));
+        Resource saved = resourceRepository.save(entity);
+        auditTrailService.logEvent(
+                "SYSTEM",
+                "RESOURCE_CREATED",
+                "RESOURCE",
+                saved.getName(),
+                null,
+                "status=" + saved.getStatus(),
+                "Resource created"
+        );
+        return toDTO(saved);
     }
 
     @Override
@@ -63,21 +76,51 @@ public class ResourceServiceImpl implements ResourceService {
         existing.setStatus(resourceDTO.getStatus());
         existing.setUpdatedAt(LocalDateTime.now());
 
-        return toDTO(resourceRepository.save(existing));
+        Resource saved = resourceRepository.save(existing);
+        auditTrailService.logEvent(
+                "SYSTEM",
+                "RESOURCE_UPDATED",
+                "RESOURCE",
+                saved.getName(),
+                null,
+                "capacity=" + saved.getCapacity() + ", status=" + saved.getStatus(),
+                "Resource details updated"
+        );
+        return toDTO(saved);
     }
 
     @Override
     public void deleteResource(String id) {
         Resource existing = findByIdOrThrow(id);
+        auditTrailService.logEvent(
+                "SYSTEM",
+                "RESOURCE_DELETED",
+                "RESOURCE",
+                existing.getName(),
+                "status=" + existing.getStatus(),
+                null,
+                "Resource deleted"
+        );
         resourceRepository.delete(existing);
     }
 
     @Override
     public ResourceDTO updateStatus(String id, ResourceStatus status) {
         Resource existing = findByIdOrThrow(id);
+        ResourceStatus oldStatus = existing.getStatus();
         existing.setStatus(status);
         existing.setUpdatedAt(LocalDateTime.now());
-        return toDTO(resourceRepository.save(existing));
+        Resource saved = resourceRepository.save(existing);
+        auditTrailService.logEvent(
+                "SYSTEM",
+                "RESOURCE_STATUS_CHANGED",
+                "RESOURCE",
+                saved.getName(),
+                oldStatus == null ? null : oldStatus.name(),
+                saved.getStatus().name(),
+                "Resource status changed"
+        );
+        return toDTO(saved);
     }
 
     private Resource findByIdOrThrow(String id) {

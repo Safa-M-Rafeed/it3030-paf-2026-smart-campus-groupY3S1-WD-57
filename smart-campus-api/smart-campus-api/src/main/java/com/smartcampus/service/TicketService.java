@@ -94,6 +94,7 @@ public class TicketService {
     @Transactional
     public IncidentTicket updateStatus(Long id, String newStatus, String resolutionNote, User caller) {
         IncidentTicket ticket = getById(id);
+        TicketStatus targetStatus = TicketStatus.valueOf(newStatus.toUpperCase());
 
         boolean isAdmin = caller.getRole().name().equals("ADMIN");
         boolean isTech = ticket.getAssignedTechnician() != null &&
@@ -102,7 +103,20 @@ public class TicketService {
         if (!isAdmin && !isTech)
             throw new RuntimeException("Not authorised to update this ticket");
 
-        ticket.setStatus(TicketStatus.valueOf(newStatus.toUpperCase()));
+        if (targetStatus == TicketStatus.REJECTED && !isAdmin) {
+            throw new RuntimeException("Only ADMIN can reject tickets");
+        }
+
+        if (targetStatus == TicketStatus.REJECTED &&
+                (resolutionNote == null || resolutionNote.isBlank())) {
+            throw new RuntimeException("Rejection reason is required");
+        }
+
+        if (!isAdmin) {
+            enforceTransition(ticket.getStatus(), targetStatus);
+        }
+
+        ticket.setStatus(targetStatus);
         if (resolutionNote != null && !resolutionNote.isBlank())
             ticket.setResolutionNote(resolutionNote);
 
@@ -118,6 +132,22 @@ public class TicketService {
 
         // 3. Finally return the object
         return updatedTicket;
+    }
+
+    private void enforceTransition(TicketStatus current, TicketStatus target) {
+        if (current == target) {
+            return;
+        }
+        boolean valid = switch (current) {
+            case OPEN -> target == TicketStatus.IN_PROGRESS;
+            case IN_PROGRESS -> target == TicketStatus.RESOLVED;
+            case RESOLVED -> target == TicketStatus.CLOSED;
+            case CLOSED, REJECTED -> false;
+        };
+        if (!valid) {
+            throw new RuntimeException(
+                    "Invalid ticket workflow transition: " + current + " -> " + target);
+        }
     }
 
     /** PUT /{id}/assign — assign technician (ADMIN only) */

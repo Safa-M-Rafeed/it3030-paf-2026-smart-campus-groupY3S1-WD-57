@@ -99,6 +99,18 @@ return ResponseEntity.status(HttpStatus.CREATED)
 commentService.addComment(id, content, user),
 "Comment added"));
 }
+// PUT /api/tickets/{id}/comments/{cid} — owner/admin
+@PutMapping("/{id}/comments/{cid}")
+public ResponseEntity<ApiResponse<?>> updateComment(
+@PathVariable Long id,
+@PathVariable Long cid,
+@RequestParam String content,
+Authentication auth) {
+User user = (User) auth.getPrincipal();
+return ResponseEntity.ok(ApiResponse.success(
+commentService.updateComment(cid, content, user),
+"Comment updated"));
+}
 // DELETE /api/tickets/{id}/comments/{cid} — owner only
 @DeleteMapping("/{id}/comments/{cid}")
 public ResponseEntity<ApiResponse<?>> deleteComment(

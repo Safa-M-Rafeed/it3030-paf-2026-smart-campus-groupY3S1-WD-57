@@ -52,6 +52,23 @@ throw new RuntimeException(
 "You can only delete your own comments");
 commentRepo.deleteById(commentId);
 }
+
+public TicketComment updateComment(Long commentId, String content, User caller) {
+TicketComment comment = commentRepo.findById(commentId)
+.orElseThrow(() -> new ResourceNotFoundException(
+"Comment","id",commentId));
+boolean isOwner = comment.getAuthor().getId()
+.equals(caller.getId());
+boolean isAdmin = caller.getRole().name().equals("ADMIN");
+if (!isOwner && !isAdmin)
+throw new RuntimeException(
+"You can only edit your own comments");
+if (content == null || content.isBlank())
+throw new RuntimeException("Comment content cannot be empty");
+comment.setContent(content);
+return commentRepo.save(comment);
+}
+
 public List<TicketComment> getCommentsForTicket(Long ticketId) {
 return commentRepo
 .findByTicketIdOrderByCreatedAtAsc(ticketId);

@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { getTicket } from '../api/ticketApi';
 import TechnicianView from '../components/TechnicianView';
 import CommentSection from '../components/CommentSection';
-const IMG_BASE = 'http://localhost:8080/';
+const IMG_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'}/`;
 const SCOLOR = {OPEN:'#1565C0',IN_PROGRESS:'#E65100',
 RESOLVED:'#1B5E20',CLOSED:'#424242',REJECTED:'#B71C1C'};
 const PCOLOR = {LOW:'#1B5E20',MEDIUM:'#E65100',

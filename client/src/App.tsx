@@ -11,9 +11,11 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 import ResourceList from './pages/ResourceList';
 import ResourceForm from './pages/ResourceForm';
 import ResourceDetail from './pages/ResourceDetail';
+import TicketListPage from './pages/TicketListPage';
+import TicketDetailPage from './pages/TicketDetailPage';
+import TicketFormPage from './pages/TicketFormPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
-const TicketsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Tickets</h1><p className="mt-2 text-gray-600">Incident and maintenance workflow integration point (Module C).</p></div>;
 
 function App() {
   return (
@@ -75,7 +77,17 @@ function App() {
             
             <Route path="/tickets" element={
               <ProtectedRoute>
-                <TicketsPage />
+                <TicketListPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/tickets/new" element={
+              <ProtectedRoute>
+                <TicketFormPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/tickets/:id" element={
+              <ProtectedRoute>
+                <TicketDetailPage />
               </ProtectedRoute>
             } />
 

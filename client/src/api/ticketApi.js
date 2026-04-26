@@ -1,5 +1,6 @@
 import axios from 'axios';
-const BASE = 'http://localhost:8080/api/tickets';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
+const BASE = `${API_BASE}/api/tickets`;
 const authHeader = (token) => ({
 headers: { Authorization: `Bearer ${token}` }
 });
@@ -32,6 +33,11 @@ axios.put(
 export const addComment = (id, content, token) =>
 axios.post(
 `${BASE}/${id}/comments?content=${encodeURIComponent(content)}`,
+{}, authHeader(token));
+// Update comment
+export const updateComment = (ticketId, commentId, content, token) =>
+axios.put(
+`${BASE}/${ticketId}/comments/${commentId}?content=${encodeURIComponent(content)}`,
 {}, authHeader(token));
 // Delete comment
 export const deleteComment = (ticketId, commentId, token) =>

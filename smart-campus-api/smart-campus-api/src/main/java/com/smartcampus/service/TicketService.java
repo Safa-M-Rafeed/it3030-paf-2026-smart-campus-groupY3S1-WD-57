@@ -11,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 
+ 
 @Service
 public class TicketService {
-
+    @Autowired private NotificationService notifService;
     @Autowired private TicketRepository ticketRepo;
     @Autowired private TicketAttachmentRepository attachRepo;
     @Autowired private UserRepository userRepo;
@@ -105,7 +106,18 @@ public class TicketService {
         if (resolutionNote != null && !resolutionNote.isBlank())
             ticket.setResolutionNote(resolutionNote);
 
-        return ticketRepo.save(ticket);
+        // 1. Save the ticket first
+        IncidentTicket updatedTicket = ticketRepo.save(ticket);
+
+        // 2. Send the notification (This must come BEFORE the return)
+        notifService.send(
+            ticket.getReportedBy(),
+            "TICKET_UPDATE",
+            "Your ticket #" + id + " status changed to " + newStatus
+        );
+
+        // 3. Finally return the object
+        return updatedTicket;
     }
 
     /** PUT /{id}/assign — assign technician (ADMIN only) */

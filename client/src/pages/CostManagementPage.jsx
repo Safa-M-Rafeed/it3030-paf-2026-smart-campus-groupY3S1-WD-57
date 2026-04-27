@@ -6,9 +6,6 @@ import {
 } from '../api/reportApi';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
-} from 'recharts';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = ['MAINTENANCE','UTILITIES','STAFFING','EQUIPMENT','SOFTWARE','FACILITIES','EVENTS','OTHER'];
@@ -184,73 +181,6 @@ function CategoryBar({ byCategory, byCategoryMonthly }) {
   );
 }
 
-// ─── Monthly breakdown chart (Recharts) ──────────────────────────────────────
-function MonthlyChart({ byMonth }) {
-  const data = useMemo(() =>
-    Object.entries(byMonth || {})
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, amt]) => ({ month, amount: Number(amt) })),
-    [byMonth]
-  );
-
-  if (!data.length) return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-center h-48 text-slate-400 text-sm">
-      No monthly data — apply a date range to see breakdown.
-    </div>
-  );
-
-  const fmtShort = (v) =>
-    new Intl.NumberFormat('si-LK', { notation: 'compact', maximumFractionDigits: 1 }).format(v);
-
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload?.length) return null;
-    return (
-      <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-lg text-xs">
-        <p className="font-semibold text-slate-700 mb-1">{label}</p>
-        <p className="text-emerald-700 font-bold">{fmtLKR(payload[0].value)}</p>
-      </div>
-    );
-  };
-
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-slate-800 mb-4">Monthly Breakdown</p>
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={data} margin={{ top: 4, right: 8, left: 16, bottom: 24 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 10, fill: '#64748b' }}
-            angle={-35}
-            textAnchor="end"
-            interval={0}
-            height={48}
-          />
-          <YAxis
-            tickFormatter={fmtShort}
-            tick={{ fontSize: 10, fill: '#64748b' }}
-            width={80}
-            label={{
-              value: 'Expenses (LKR)',
-              angle: -90,
-              position: 'insideLeft',
-              offset: -4,
-              style: { fontSize: 10, fill: '#94a3b8', textAnchor: 'middle' },
-            }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={48}>
-            {data.map((_, i) => (
-              <Cell key={i} fill={i % 2 === 0 ? '#059669' : '#0d9488'} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-// ─── PDF export ───────────────────────────────────────────────────────────────
 function buildPDF({ summary, fromDate, toDate }) {
   const doc = new jsPDF();
 
@@ -536,10 +466,7 @@ export default function CostManagementPage() {
 
           {/* ── Charts ── */}
           {summary && (
-            <div className="grid gap-5 lg:grid-cols-2">
-              <CategoryBar byCategory={summary.byCategory} byCategoryMonthly={summary.byCategoryMonthly} />
-              <MonthlyChart byMonth={summary.byMonth} />
-            </div>
+            <CategoryBar byCategory={summary.byCategory} byCategoryMonthly={summary.byCategoryMonthly} />
           )}
 
           {/* ── Expense table ── */}

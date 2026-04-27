@@ -106,25 +106,68 @@ export default function AnalyticsDashboardPage() {
           <div className="grid gap-5 lg:grid-cols-2">
             <ChartCard title="Peak Booking Hours (Bar)">
               <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={data?.peakBookingHours || []}>
+                <BarChart data={data?.peakBookingHours || []}
+                  margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" tick={{ fontSize: 11 }} interval={2} />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#0f766e" radius={[6, 6, 0, 0]} />
+                  <XAxis dataKey="hour" tick={{ fontSize: 10 }} interval={2} />
+                  <YAxis
+                    allowDecimals={false}
+                    tick={{ fontSize: 10 }}
+                    width={36}
+                    label={{
+                      value: 'Bookings',
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: 8,
+                      style: { fontSize: 10, fill: '#94a3b8', textAnchor: 'middle' },
+                    }}
+                  />
+                  <Tooltip formatter={(v) => [v, 'Bookings']} />
+                  <Bar dataKey="count" fill="#0f766e" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
             <ChartCard title="Incident Resolution Trend (Line)">
               <ResponsiveContainer width="100%" height={280}>
-                <LineChart data={data?.incidentResolutionTrend || []}>
+                <LineChart data={data?.incidentResolutionTrend || []}
+                  margin={{ top: 4, right: 16, left: 8, bottom: 24 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                  <YAxis />
-                  <Tooltip />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 10 }}
+                    angle={-35}
+                    textAnchor="end"
+                    interval={Math.floor((data?.incidentResolutionTrend?.length || 1) / 8)}
+                    height={48}
+                    tickFormatter={(d) => d.slice(5)} // show MM-DD only
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    tick={{ fontSize: 10 }}
+                    width={36}
+                    label={{
+                      value: 'Resolved',
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: 8,
+                      style: { fontSize: 10, fill: '#94a3b8', textAnchor: 'middle' },
+                    }}
+                  />
+                  <Tooltip
+                    formatter={(v) => [v, 'Resolved tickets']}
+                    labelFormatter={(l) => `Date: ${l}`}
+                  />
                   <Legend />
-                  <Line type="monotone" dataKey="resolvedCount" stroke="#2563eb" strokeWidth={2} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="resolvedCount"
+                    name="Resolved Tickets"
+                    stroke="#2563eb"
+                    strokeWidth={2}
+                    dot={{ r: 2 }}
+                    activeDot={{ r: 5 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>

@@ -33,3 +33,24 @@ export const getAnalyticsDashboard = (token, filters = {}) =>
 
 export const getSystemHealthStatusBoard = (token) =>
   axios.get(`${API_BASE}/api/reports/system-health-status-board`, authHeader(token));
+
+export const getMostActiveUsersReport = (token, params = {}) =>
+  axios.get(`${API_BASE}/api/reports/report-export/most-active-users`, {
+    ...authHeader(token),
+    params: {
+      rangeType: params.rangeType || 'this_week',
+      fromDate: params.fromDate || undefined,
+      toDate: params.toDate || undefined,
+    },
+  });
+
+export const exportMostActiveUsersCsv = (token, params = {}) =>
+  axios.get(`${API_BASE}/api/reports/report-export/most-active-users/csv`, {
+    ...authHeader(token),
+    params: {
+      rangeType: params.rangeType || 'this_week',
+      fromDate: params.fromDate || undefined,
+      toDate: params.toDate || undefined,
+    },
+    responseType: 'blob',
+  });

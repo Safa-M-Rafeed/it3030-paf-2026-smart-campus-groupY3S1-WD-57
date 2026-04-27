@@ -17,6 +17,7 @@ import TicketFormPage from './pages/TicketFormPage';
 import AuditTrailPage from './pages/AuditTrailPage';
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
+import MostActiveUsersReportPage from './pages/MostActiveUsersReportPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -46,16 +47,6 @@ const reportOptions = [
     accent: 'from-indigo-700 via-blue-700 to-cyan-700',
   },
 ];
-
-const ReportSectionPage = ({ title, description }: { title: string; description: string }) => (
-  <div className="mx-auto max-w-4xl p-8">
-    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Module F</p>
-      <h1 className="mt-3 text-3xl font-semibold text-slate-900">{title}</h1>
-      <p className="mt-3 text-slate-600">{description}</p>
-    </div>
-  </div>
-);
 
 const ReportsPage = () => (
   <div className="mx-auto max-w-6xl p-8">
@@ -172,10 +163,7 @@ function App() {
 
             <Route path="/reports/report-export" element={
               <ProtectedRoute requiredRole="ADMIN">
-                <ReportSectionPage
-                  title="📄 Report Export"
-                  description="Generate downloadable report outputs for sharing, review, or archival."
-                />
+                <MostActiveUsersReportPage />
               </ProtectedRoute>
             } />
 

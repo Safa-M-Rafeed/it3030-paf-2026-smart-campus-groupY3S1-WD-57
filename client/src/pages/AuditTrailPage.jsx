@@ -1,6 +1,8 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { deleteAuditTrailEntry, getAuditTrail } from '../api/reportApi';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const formatDateTime = (value) => {
   if (!value) return '-';
@@ -56,6 +58,49 @@ export default function AuditTrailPage() {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete audit entry');
     }
+  };
+
+  const exportPDF = () => {
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    // Header
+    doc.setFontSize(18);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Audit Trail Report', 14, 18);
+
+    // Active filters summary
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    const filterParts = [];
+    if (filters.actor) filterParts.push(`Actor: ${filters.actor}`);
+    if (filters.actionType) filterParts.push(`Action: ${filters.actionType}`);
+    if (filters.entity) filterParts.push(`Entity: ${filters.entity}`);
+    if (filters.fromDate) filterParts.push(`From: ${filters.fromDate}`);
+    if (filters.toDate) filterParts.push(`To: ${filters.toDate}`);
+    const filterText = filterParts.length ? filterParts.join('  |  ') : 'No filters applied';
+    doc.text(filterText, 14, 26);
+    doc.text(`Generated: ${new Date().toLocaleString()}  —  ${entries.length} record(s)`, 14, 32);
+
+    autoTable(doc, {
+      startY: 38,
+      head: [['Actor', 'Action', 'Entity', 'Target', 'Change', 'Timestamp']],
+      body: entries.map((e) => [
+        e.actor || '-',
+        e.actionType || '-',
+        e.entity || '-',
+        e.targetItem || '-',
+        `${e.oldValue || '-'} → ${e.newValue || '-'}`,
+        formatDateTime(e.createdAt),
+      ]),
+      headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+      bodyStyles: { fontSize: 8, textColor: [30, 41, 59] },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      styles: { cellPadding: 3, overflow: 'linebreak' },
+      columnStyles: { 4: { cellWidth: 50 } },
+    });
+
+    const activeFilters = filterParts.length ? `_${filterParts.map(f => f.replace(/[^a-z0-9]/gi, '-')).join('_')}` : '';
+    doc.save(`audit-trail${activeFilters}.pdf`);
   };
 
   return (
@@ -128,6 +173,20 @@ export default function AuditTrailPage() {
               }}
             >
               Reset
+            </button>
+            <button
+              type="button"
+              disabled={loading || entries.length === 0}
+              className="ml-auto flex items-center gap-2 rounded-xl bg-rose-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+              onClick={exportPDF}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <line x1="9" y1="15" x2="15" y2="15"/>
+              </svg>
+              Export PDF
             </button>
           </div>
 

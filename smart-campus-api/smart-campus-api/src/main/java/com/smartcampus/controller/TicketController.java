@@ -51,7 +51,7 @@ priority, contactDetails, user, attachments),
 // GET /api/tickets — list (own / all based on role)
 @GetMapping
 public ResponseEntity<ApiResponse<?>> getTickets(
-@RequestParam(required=false) String status,
+@RequestParam(name = "status", required=false) String status,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.ok(ApiResponse.success(
@@ -61,16 +61,16 @@ ticketService.getTickets(user, status),
 // GET /api/tickets/{id} — single ticket with attachments
 @GetMapping("/{id}")
 public ResponseEntity<ApiResponse<?>> getTicket(
-@PathVariable Long id) {
+@PathVariable("id") Long id) {
 return ResponseEntity.ok(ApiResponse.success(
 ticketService.getById(id), "Ticket fetched"));
 }
 // PUT /api/tickets/{id}/status — TECH or ADMIN
 @PutMapping("/{id}/status")
 public ResponseEntity<ApiResponse<?>> updateStatus(
-@PathVariable Long id,
-@RequestParam String status,
-@RequestParam(required=false) String resolutionNote,
+@PathVariable("id") Long id,
+@RequestParam(name = "status") String status,
+@RequestParam(name = "resolutionNote", required=false) String resolutionNote,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.ok(ApiResponse.success(
@@ -82,16 +82,16 @@ id, status, resolutionNote, user),
 @PutMapping("/{id}/assign")
 @PreAuthorize("hasRole('ADMIN')")
 public ResponseEntity<ApiResponse<?>> assign(
-@PathVariable Long id,
-@RequestParam Long technicianId) {
+@PathVariable("id") Long id,
+@RequestParam(name = "technicianId") Long technicianId) {
 return ResponseEntity.ok(ApiResponse.success(
 ticketService.assignTechnician(id, technicianId),
 "Technician assigned"));
 }// POST /api/tickets/{id}/comments — any authenticated user
 @PostMapping("/{id}/comments")
 public ResponseEntity<ApiResponse<?>> addComment(
-@PathVariable Long id,
-@RequestParam String content,
+@PathVariable("id") Long id,
+@RequestParam(name = "content") String content,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.status(HttpStatus.CREATED)
@@ -102,9 +102,9 @@ commentService.addComment(id, content, user),
 // PUT /api/tickets/{id}/comments/{cid} — owner/admin
 @PutMapping("/{id}/comments/{cid}")
 public ResponseEntity<ApiResponse<?>> updateComment(
-@PathVariable Long id,
-@PathVariable Long cid,
-@RequestParam String content,
+@PathVariable("id") Long id,
+@PathVariable("cid") Long cid,
+@RequestParam(name = "content") String content,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.ok(ApiResponse.success(
@@ -114,8 +114,8 @@ commentService.updateComment(cid, content, user),
 // DELETE /api/tickets/{id}/comments/{cid} — owner only
 @DeleteMapping("/{id}/comments/{cid}")
 public ResponseEntity<ApiResponse<?>> deleteComment(
-@PathVariable Long id,
-@PathVariable Long cid,
+@PathVariable("id") Long id,
+@PathVariable("cid") Long cid,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 commentService.deleteComment(cid, user);

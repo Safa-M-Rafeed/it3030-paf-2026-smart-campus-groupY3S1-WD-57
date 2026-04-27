@@ -38,11 +38,11 @@ public class ReportController {
     @GetMapping("/audit-trail")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<AuditTrailEntry>>> getAuditTrail(
-            @RequestParam(required = false) String actor,
-            @RequestParam(required = false) String actionType,
-            @RequestParam(required = false) String entity,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+            @RequestParam(name = "actor",      required = false) String actor,
+            @RequestParam(name = "actionType", required = false) String actionType,
+            @RequestParam(name = "entity",     required = false) String entity,
+            @RequestParam(name = "fromDate",   required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(name = "toDate",     required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
         return ResponseEntity.ok(ApiResponse.success(
                 auditTrailService.getEntries(actor, actionType, entity, fromDate, toDate),
@@ -52,7 +52,7 @@ public class ReportController {
 
     @DeleteMapping("/audit-trail/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteAuditEntry(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteAuditEntry(@PathVariable("id") Long id) {
         auditTrailService.deleteEntry(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Audit entry deleted successfully"));
     }
@@ -60,9 +60,9 @@ public class ReportController {
     @GetMapping("/report-export/most-active-users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<MostActiveUsersReportResponse>> getMostActiveUsersReport(
-            @RequestParam(defaultValue = "this_week") String rangeType,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+            @RequestParam(name = "rangeType", defaultValue = "this_week") String rangeType,
+            @RequestParam(name = "fromDate",  required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(name = "toDate",    required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
         MostActiveUsersReportResponse report = mostActiveUsersReportService.getReport(rangeType, fromDate, toDate);
         return ResponseEntity.ok(ApiResponse.success(report, "Most active users report fetched successfully"));
@@ -71,9 +71,9 @@ public class ReportController {
     @GetMapping("/report-export/most-active-users/csv")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> exportMostActiveUsersCsv(
-            @RequestParam(defaultValue = "this_week") String rangeType,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+            @RequestParam(name = "rangeType", defaultValue = "this_week") String rangeType,
+            @RequestParam(name = "fromDate",  required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(name = "toDate",    required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
         MostActiveUsersReportResponse report = mostActiveUsersReportService.getReport(rangeType, fromDate, toDate);
         String csv = mostActiveUsersReportService.toCsv(report);

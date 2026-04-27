@@ -33,8 +33,8 @@ public class AnalyticsController {
     @GetMapping("/analytics-dashboard")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AnalyticsDashboardResponse>> getAnalyticsDashboard(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+            @RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(name = "toDate",   required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
         return ResponseEntity.ok(ApiResponse.success(
                 analyticsService.getDashboard(fromDate, toDate),

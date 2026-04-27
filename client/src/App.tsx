@@ -19,6 +19,7 @@ import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
 import MostActiveUsersReportPage from './pages/MostActiveUsersReportPage';
 import GoalsPage from './pages/GoalsPage';
+import CostManagementPage from './pages/CostManagementPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -52,6 +53,12 @@ const reportOptions = [
     desc: 'Set monthly performance targets and track progress with colour-coded status rings.',
     path: '/reports/goals',
     accent: 'from-violet-700 via-purple-700 to-fuchsia-700',
+  },
+  {
+    title: '💰 Cost Management',
+    desc: 'Assign campus expenses, calculate totals by date range, and export a cost summary PDF.',
+    path: '/reports/cost-management',
+    accent: 'from-emerald-800 via-emerald-700 to-teal-600',
   },
 ];
 
@@ -183,6 +190,12 @@ function App() {
             <Route path="/reports/goals" element={
               <ProtectedRoute requiredRole="ADMIN">
                 <GoalsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/cost-management" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <CostManagementPage />
               </ProtectedRoute>
             } />
             

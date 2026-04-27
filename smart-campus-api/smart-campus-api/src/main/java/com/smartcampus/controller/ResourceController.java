@@ -32,23 +32,23 @@ public class ResourceController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ResourceDTO>>> getAllResources(
-            @RequestParam(required = false) ResourceType type,
-            @RequestParam(required = false) Integer capacity,
-            @RequestParam(required = false) String location
+            @RequestParam(name = "type",     required = false) ResourceType type,
+            @RequestParam(name = "capacity", required = false) Integer capacity,
+            @RequestParam(name = "location", required = false) String location
     ) {
         List<ResourceDTO> resources = resourceService.getAllResources(type, capacity, location);
         return ResponseEntity.ok(ApiResponse.success(resources, "Resources fetched successfully"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ResourceDTO>> getResourceById(@PathVariable String id) {
+    public ResponseEntity<ApiResponse<ResourceDTO>> getResourceById(@PathVariable("id") String id) {
         ResourceDTO resource = resourceService.getResourceById(id);
         return ResponseEntity.ok(ApiResponse.success(resource, "Resource fetched successfully"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ResourceDTO>> updateResource(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody ResourceDTO resourceDTO
     ) {
         ResourceDTO updated = resourceService.updateResource(id, resourceDTO);
@@ -56,14 +56,14 @@ public class ResourceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteResource(@PathVariable String id) {
+    public ResponseEntity<Void> deleteResource(@PathVariable("id") String id) {
         resourceService.deleteResource(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApiResponse<ResourceDTO>> updateStatus(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody StatusUpdateRequest statusRequest
     ) {
         ResourceDTO updated = resourceService.updateStatus(id, statusRequest.getStatus());

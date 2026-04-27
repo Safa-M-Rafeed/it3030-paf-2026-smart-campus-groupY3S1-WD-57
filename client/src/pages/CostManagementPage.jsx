@@ -385,9 +385,6 @@ export default function CostManagementPage() {
         <div className="border-b border-slate-200 bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-600 px-8 py-10 text-white">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-200">Module F</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight">Cost Management</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-emerald-100">
-            Assign campus expenses with daily or monthly recurrence in LKR. Filter by date range to calculate period costs and export a full PDF cost summary.
-          </p>
         </div>
 
         <div className="space-y-6 px-8 py-8">

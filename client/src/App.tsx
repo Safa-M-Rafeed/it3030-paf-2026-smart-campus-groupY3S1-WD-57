@@ -16,6 +16,7 @@ import TicketDetailPage from './pages/TicketDetailPage';
 import TicketFormPage from './pages/TicketFormPage';
 import AuditTrailPage from './pages/AuditTrailPage';
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
+import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -37,6 +38,12 @@ const reportOptions = [
     desc: 'Generate downloadable report outputs for sharing, review, or archival.',
     path: '/reports/report-export',
     accent: 'from-amber-700 via-orange-700 to-rose-700',
+  },
+  {
+    title: 'System Health Status Board',
+    desc: 'View live system health metrics, record counts, and operational risk indicators.',
+    path: '/reports/system-health-status-board',
+    accent: 'from-indigo-700 via-blue-700 to-cyan-700',
   },
 ];
 
@@ -60,7 +67,7 @@ const ReportsPage = () => (
       </p>
     </div>
 
-    <div className="grid gap-5 md:grid-cols-3">
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
       {reportOptions.map((option) => (
         <Link
           key={option.path}
@@ -169,6 +176,12 @@ function App() {
                   title="📄 Report Export"
                   description="Generate downloadable report outputs for sharing, review, or archival."
                 />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/system-health-status-board" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <SystemHealthStatusBoardPage />
               </ProtectedRoute>
             } />
             

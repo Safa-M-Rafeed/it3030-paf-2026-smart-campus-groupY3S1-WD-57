@@ -2,7 +2,9 @@ package com.smartcampus.controller;
 
 import com.smartcampus.dto.response.AnalyticsDashboardResponse;
 import com.smartcampus.dto.response.ApiResponse;
+import com.smartcampus.dto.response.SystemHealthStatusBoardResponse;
 import com.smartcampus.service.AnalyticsService;
+import com.smartcampus.service.SystemHealthStatusBoardService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,9 +20,14 @@ import java.time.LocalDate;
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
+    private final SystemHealthStatusBoardService systemHealthStatusBoardService;
 
-    public AnalyticsController(AnalyticsService analyticsService) {
+    public AnalyticsController(
+            AnalyticsService analyticsService,
+            SystemHealthStatusBoardService systemHealthStatusBoardService
+    ) {
         this.analyticsService = analyticsService;
+        this.systemHealthStatusBoardService = systemHealthStatusBoardService;
     }
 
     @GetMapping("/analytics-dashboard")
@@ -32,6 +39,15 @@ public class AnalyticsController {
         return ResponseEntity.ok(ApiResponse.success(
                 analyticsService.getDashboard(fromDate, toDate),
                 "Analytics dashboard fetched successfully"
+        ));
+    }
+
+    @GetMapping("/system-health-status-board")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<SystemHealthStatusBoardResponse>> getSystemHealthStatusBoard() {
+        return ResponseEntity.ok(ApiResponse.success(
+                systemHealthStatusBoardService.getBoardData(),
+                "System health status board fetched successfully"
         ));
     }
 }

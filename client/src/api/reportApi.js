@@ -30,3 +30,6 @@ export const getAnalyticsDashboard = (token, filters = {}) =>
       toDate: filters.toDate || undefined,
     },
   });
+
+export const getSystemHealthStatusBoard = (token) =>
+  axios.get(`${API_BASE}/api/reports/system-health-status-board`, authHeader(token));

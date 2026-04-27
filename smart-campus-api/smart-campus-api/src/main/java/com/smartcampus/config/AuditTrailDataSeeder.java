@@ -19,10 +19,6 @@ public class AuditTrailDataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (auditTrailRepository.count() > 0) {
-            return;
-        }
-
         LocalDateTime now = LocalDateTime.now();
         List<AuditTrailEntry> samples = List.of(
                 AuditTrailEntry.builder()
@@ -86,6 +82,66 @@ public class AuditTrailDataSeeder implements CommandLineRunner {
                         .createdAt(now.minusHours(26))
                         .build(),
                 AuditTrailEntry.builder()
+                        .actor("sliit.admin@campus.lk")
+                        .actionType("BOOKING_REJECTED")
+                        .entity("BOOKING")
+                        .targetItem("Booking #BK-1054")
+                        .oldValue("PENDING")
+                        .newValue("REJECTED")
+                        .details("Rejected due to unavailable room")
+                        .createdAt(now.minusHours(30))
+                        .build(),
+                AuditTrailEntry.builder()
+                        .actor("sliit.admin@campus.lk")
+                        .actionType("BOOKING_APPROVED")
+                        .entity("BOOKING")
+                        .targetItem("Booking #BK-1061")
+                        .oldValue("PENDING")
+                        .newValue("APPROVED")
+                        .details("Morning booking approved")
+                        .createdAt(now.minusHours(54))
+                        .build(),
+                AuditTrailEntry.builder()
+                        .actor("tech.ravi@campus.lk")
+                        .actionType("TICKET_STATUS_CHANGED")
+                        .entity("TICKET")
+                        .targetItem("Ticket #TK-2287")
+                        .oldValue("OPEN")
+                        .newValue("IN_PROGRESS")
+                        .details("Technician started diagnosis")
+                        .createdAt(now.minusHours(50))
+                        .build(),
+                AuditTrailEntry.builder()
+                        .actor("tech.ravi@campus.lk")
+                        .actionType("TICKET_STATUS_CHANGED")
+                        .entity("TICKET")
+                        .targetItem("Ticket #TK-2287")
+                        .oldValue("IN_PROGRESS")
+                        .newValue("CLOSED")
+                        .details("Repair completed and closed")
+                        .createdAt(now.minusHours(44))
+                        .build(),
+                AuditTrailEntry.builder()
+                        .actor("tech.nila@campus.lk")
+                        .actionType("TICKET_STATUS_CHANGED")
+                        .entity("TICKET")
+                        .targetItem("Ticket #TK-2290")
+                        .oldValue("OPEN")
+                        .newValue("IN_PROGRESS")
+                        .details("Networking issue under investigation")
+                        .createdAt(now.minusHours(20))
+                        .build(),
+                AuditTrailEntry.builder()
+                        .actor("tech.nila@campus.lk")
+                        .actionType("TICKET_STATUS_CHANGED")
+                        .entity("TICKET")
+                        .targetItem("Ticket #TK-2290")
+                        .oldValue("IN_PROGRESS")
+                        .newValue("RESOLVED")
+                        .details("Switch port replaced")
+                        .createdAt(now.minusHours(16))
+                        .build(),
+                AuditTrailEntry.builder()
                         .actor("manager.ops@campus.lk")
                         .actionType("USER_LOGIN")
                         .entity("USER")
@@ -97,6 +153,13 @@ public class AuditTrailDataSeeder implements CommandLineRunner {
                         .build()
         );
 
-        auditTrailRepository.saveAll(samples);
+        samples.forEach(this::saveIfMissing);
+    }
+
+    private void saveIfMissing(AuditTrailEntry entry) {
+        if (auditTrailRepository.existsByActionTypeAndTargetItem(entry.getActionType(), entry.getTargetItem())) {
+            return;
+        }
+        auditTrailRepository.save(entry);
     }
 }

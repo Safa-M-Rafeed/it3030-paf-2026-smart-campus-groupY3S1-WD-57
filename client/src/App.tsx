@@ -18,6 +18,7 @@ import AuditTrailPage from './pages/AuditTrailPage';
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
 import MostActiveUsersReportPage from './pages/MostActiveUsersReportPage';
+import GoalsPage from './pages/GoalsPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -45,6 +46,12 @@ const reportOptions = [
     desc: 'View live system health metrics, record counts, and operational risk indicators.',
     path: '/reports/system-health-status-board',
     accent: 'from-indigo-700 via-blue-700 to-cyan-700',
+  },
+  {
+    title: '🎯 Goal & Target Setting',
+    desc: 'Set monthly performance targets and track progress with colour-coded status rings.',
+    path: '/reports/goals',
+    accent: 'from-violet-700 via-purple-700 to-fuchsia-700',
   },
 ];
 
@@ -170,6 +177,12 @@ function App() {
             <Route path="/reports/system-health-status-board" element={
               <ProtectedRoute requiredRole="ADMIN">
                 <SystemHealthStatusBoardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/goals" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <GoalsPage />
               </ProtectedRoute>
             } />
             

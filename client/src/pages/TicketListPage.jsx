@@ -2,84 +2,112 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getTickets } from '../api/ticketApi';
-const STATUS_COLORS = {
-OPEN:'#1565C0', IN_PROGRESS:'#E65100',
-RESOLVED:'#1B5E20', CLOSED:'#424242', REJECTED:'#B71C1C'
-};
-const PRIORITY_COLORS = {
-LOW:'#1B5E20', MEDIUM:'#E65100',
-HIGH:'#B71C1C', CRITICAL:'#4A148C'
-};
+
 export default function TicketListPage() {
-const [tickets, setTickets] = useState([]);
-const [statusFilter, setStatusFilter] = useState('');
-const { token, user } = useContext(AuthContext);
-const navigate = useNavigate();
-useEffect(() => {
-getTickets(token, statusFilter)
-.then(res => setTickets(res.data.data || []));
-}, [statusFilter]);
-const badge = (text, colorMap) => (
-<span style={{
-background: colorMap[text] || '#424242',
-color:'white', padding:'2px 10px',
-borderRadius:'12px', fontSize:'11px',
-fontWeight:'bold' }}>
-{text}
-</span>
-);
-return (
-<div style={{padding:'24px'}}>
-<div style={{display:'flex',justifyContent:'space-between',
-alignItems:'center',marginBottom:'16px'}}>
-<h2>Incident Tickets</h2>
-<button onClick={()=>navigate('/tickets/new')}
-style={{padding:'8px 18px',background:'#4A148C',
-color:'white',border:'none',borderRadius:'4px',
-cursor:'pointer'}}>+ New Ticket
-</button>
-</div>
-{/* Status filter */}
-{user?.role === 'ADMIN' && (
-<select value={statusFilter}
-onChange={e=>setStatusFilter(e.target.value)}
-style={{padding:'6px 10px',marginBottom:'16px'}}>
-<option value=''>All Statuses</option>
-{['OPEN','IN_PROGRESS','RESOLVED','CLOSED','REJECTED']
-.map(s=><option key={s}>{s}</option>)}
-</select>
-)}
-<table style={{width:'100%',borderCollapse:'collapse'}}>
-<thead>
-<tr style={{background:'#4A148C',color:'white'}}>
-{['#','Facility','Category','Priority',
-'Status','Date',''].map(h=>
-<th key={h} style={{padding:'10px 8px',
-textAlign:'left'}}>{h}</th>)}
-</tr>
-</thead>
-<tbody>
-{tickets.map((t,i) => (
-<tr key={t.id} style={{
-background:i%2===0?'#fff':'#f5f5f5',
-borderBottom:'1px solid #eee'}}>
-<td style={{padding:'10px 8px'}}>{t.id}</td>
-<td>{t.facilityName}</td>
-<td>{t.category}</td>
-<td>{badge(t.priority, PRIORITY_COLORS)}</td>
-<td>{badge(t.status, STATUS_COLORS)}</td>
-<td>{t.createdAt?.slice(0,10)}</td>
-<td>
-<button onClick={()=>navigate(`/tickets/${t.id}`)}
-style={{padding:'4px 10px',cursor:'pointer',
-background:'#E3F2FD',border:'none',
-borderRadius:'4px'}}>
-View
-</button>
-</td></tr>
-))}
-</tbody>
-</table>
-</div>
-);
+    const [tickets, setTickets] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { token } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token) {
+            getTickets(token)
+                .then(res => {
+                    // Extracting the nested data array from your specific API response structure
+                    const data = res.data?.data || [];
+                    setTickets(Array.isArray(data) ? data : []);
+                    setLoading(false);
+                })
+                .catch(() => setLoading(false));
+        }
+    }, [token]);
+
+    const getPriorityStyle = (priority) => {
+        const colors = { CRITICAL: '#B71C1C', HIGH: '#E65100', MEDIUM: '#121212', LOW: '#455A64' };
+        return { color: colors[priority] || '#121212', fontWeight: 'bold', fontSize: '12px' };
+    };
+
+    return (
+        <div style={{ backgroundColor: '#F5F2ED', minHeight: '100vh', padding: '40px' }}>
+            
+            <div style={{ marginBottom: '40px' }}>
+                <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#888', letterSpacing: '2px', fontFamily: 'sans-serif' }}>
+                    System Module C
+                </span>
+                <h1 style={{ fontFamily: 'serif', fontSize: '48px', margin: '10px 0', color: '#1a1a1a' }}>
+                    Incident <span style={{ fontStyle: 'italic', color: '#7D6E5D' }}>Ticketing.</span>
+                </h1>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+                <button onClick={() => navigate('/tickets/new')}
+                    style={{ 
+                        padding: '12px 28px', background: '#121212', color: 'white', 
+                        border: 'none', cursor: 'pointer', fontWeight: 'bold', letterSpacing: '1px' 
+                    }}>
+                    + CREATE TICKET
+                </button>
+            </div>
+
+            <div style={{ background: 'white', border: '1px solid #E0DCD5', borderRadius: '2px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif' }}>
+                    <thead>
+                        {/* Highlighted Top Row: Dark theme from your dashboard */}
+                        <tr style={{ textAlign: 'left', backgroundColor: '#121212' }}>
+                            {['ID', 'FACILITY', 'CATEGORY', 'PRIORITY', 'STATUS', 'DATE', 'ACTION'].map(h => (
+                                <th key={h} style={{ 
+                                    padding: '18px 20px', fontSize: '11px', color: 'white', 
+                                    letterSpacing: '1.5px', fontWeight: '600' 
+                                }}>{h}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center' }}>Syncing...</td></tr>
+                        ) : tickets.length > 0 ? (
+                            tickets.map((t) => (
+                                <tr key={t.id} style={{ borderBottom: '1px solid #F5F2ED' }}>
+                                    <td style={{ padding: '20px', fontWeight: 'bold' }}>#{t.id}</td>
+                                    <td style={{ padding: '20px' }}>{t.facilityName || t.facility_name}</td>
+                                    <td style={{ padding: '20px', color: '#7D6E5D' }}>{t.category}</td>
+                                    <td style={{ padding: '20px' }}>
+                                        <span style={getPriorityStyle(t.priority)}>{t.priority}</span>
+                                    </td>
+                                    <td style={{ padding: '20px' }}>
+                                        <span style={{ fontSize: '10px', fontWeight: '900', border: '1.5px solid #121212', padding: '4px 10px' }}>
+                                            {t.status}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '20px', color: '#888' }}>{t.createdAt?.slice(0, 10)}</td>
+                                    
+                                    {/* VIEW BUTTON: Using text with specific workspace fonts */}
+                                    <td style={{ padding: '20px', textAlign: 'right' }}>
+                                        <button 
+                                            onClick={() => navigate(`/tickets/${t.id}`)} 
+                                            style={{ 
+                                                background: 'none', 
+                                                border: 'none', 
+                                                cursor: 'pointer',
+                                                fontSize: '11px',
+                                                fontWeight: '800',
+                                                letterSpacing: '2px',
+                                                color: '#121212',
+                                                textDecoration: 'underline',
+                                                textUnderlineOffset: '4px'
+                                            }}
+                                        >
+                                            VIEW DETAILS
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr><td colSpan="7" style={{ padding: '60px', textAlign: 'center', color: '#999' }}>No active records.</td></tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
 }

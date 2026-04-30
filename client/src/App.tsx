@@ -20,8 +20,7 @@ import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
 import MostActiveUsersReportPage from './pages/MostActiveUsersReportPage';
 import GoalsPage from './pages/GoalsPage';
 import CostManagementPage from './pages/CostManagementPage';
-
-const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
+import BookingsPage from './pages/BookingsPage';
 
 const reportOptions = [
   {

@@ -65,4 +65,16 @@ public ResponseEntity<ApiResponse<?>> triggerEvent(
             svc.triggerEvent(req, actor),
             "Notification event triggered"));
 }
+
+// POST /api/notifications/demo/seed
+// Demo helper endpoint to quickly populate all required Module D notification types.
+@PostMapping("/demo/seed")
+public ResponseEntity<ApiResponse<?>> seedDemoNotifications(
+        Authentication auth
+) {
+    User user = (User) auth.getPrincipal();
+    return ResponseEntity.ok(ApiResponse.success(
+            svc.seedDemoNotificationsForUser(user),
+            "Demo notifications generated"));
+}
 }

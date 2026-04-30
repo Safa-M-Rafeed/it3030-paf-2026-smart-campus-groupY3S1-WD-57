@@ -5,9 +5,11 @@ import com.smartcampus.model.*;
 import com.smartcampus.model.enums.*;
 import com.smartcampus.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 
@@ -47,6 +49,11 @@ public class TicketService {
                 .build();
 
         ticketRepo.save(ticket);
+        notifService.send(
+                reporter,
+                "TICKET_RECEIVED",
+                "Your ticket #" + ticket.getId() + " has been received and is now OPEN."
+        );
         auditTrailService.logEvent(
                 reporter.getEmail(),
                 "TICKET_CREATED",
@@ -89,7 +96,7 @@ public class TicketService {
         }
         
         if (role.equals("TECHNICIAN"))
-            return ticketRepo.findByAssignedTechnicianId(caller.getId());
+            return ticketRepo.findByAssignedTechnicianIdOrderByCreatedAtDesc(caller.getId());
             
         return ticketRepo.findByReportedByIdOrderByCreatedAtDesc(caller.getId());
     }
@@ -98,6 +105,14 @@ public class TicketService {
     public IncidentTicket getById(Long id) {
         return ticketRepo.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Ticket", "id", id));
+    }
+
+    public IncidentTicket getByIdForUser(Long id, User caller) {
+        IncidentTicket ticket = getById(id);
+        if (!canViewTicket(caller, ticket)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to view this ticket");
+        }
+        return ticket;
     }
 
     /** PUT /{id}/status — update status + resolution note */
@@ -180,6 +195,18 @@ public class TicketService {
         ticket.setAssignedTechnician(tech);
         ticket.setStatus(TicketStatus.IN_PROGRESS);
         IncidentTicket updated = ticketRepo.save(ticket);
+        notifService.send(
+                ticket.getReportedBy(),
+                "TICKET_ASSIGNED",
+                "Your ticket #" + ticketId + " has been assigned to technician "
+                        + (tech.getName() == null || tech.getName().isBlank() ? tech.getEmail() : tech.getName())
+                        + " and moved to IN_PROGRESS."
+        );
+        notifService.send(
+                tech,
+                "TICKET_ASSIGNED_TO_YOU",
+                "Ticket #" + ticketId + " has been assigned to you."
+        );
         auditTrailService.logEvent(
                 "SYSTEM",
                 "TICKET_ASSIGNED",
@@ -209,5 +236,19 @@ public class TicketService {
         }
         
         ticketRepo.delete(ticket);
+    }
+
+    private boolean canViewTicket(User caller, IncidentTicket ticket) {
+        String role = caller.getRole().name();
+        if ("ADMIN".equals(role)) {
+            return true;
+        }
+        if ("USER".equals(role)) {
+            return ticket.getReportedBy() != null && ticket.getReportedBy().getId().equals(caller.getId());
+        }
+        if ("TECHNICIAN".equals(role)) {
+            return ticket.getAssignedTechnician() != null && ticket.getAssignedTechnician().getId().equals(caller.getId());
+        }
+        return false;
     }
 }

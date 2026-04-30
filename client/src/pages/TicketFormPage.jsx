@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { createTicket } from '../api/ticketApi';
@@ -14,8 +14,22 @@ priority:'MEDIUM', contactDetails:''
 const [files, setFiles] = useState([]);
 const [previews, setPreviews] = useState([]);
 const [error, setError] = useState('');
+const [submitting, setSubmitting] = useState(false);
+useEffect(() => {
+return () => previews.forEach((p) => URL.revokeObjectURL(p));
+}, [previews]);
 const handleFileChange = (e) => {
 const selected = Array.from(e.target.files).slice(0, 3);
+const invalid = selected.find((f) =>
+!['image/jpeg', 'image/jpg', 'image/png'].includes(f.type));
+if (invalid) {
+setError('Only JPEG and PNG images are allowed.');
+setFiles([]);
+setPreviews([]);
+return;
+}
+setError('');
+previews.forEach((p) => URL.revokeObjectURL(p));
 setFiles(selected);
 setPreviews(selected.map(f => URL.createObjectURL(f)));
 };
@@ -28,10 +42,13 @@ const fd = new FormData();
 Object.entries(form).forEach(([k,v]) => fd.append(k, v));
 files.forEach(f => fd.append('attachments', f));
 try {
+setSubmitting(true);
 await createTicket(fd, token);
 navigate('/tickets');
 } catch (e) {
 setError(e.response?.data?.message || 'Failed to create ticket');
+} finally {
+setSubmitting(false);
 }
 };
 const inp = {padding:'8px',width:'100%',boxSizing:'border-box',
@@ -74,10 +91,11 @@ style={{width:'80px',height:'80px',objectFit:'cover',
 borderRadius:'4px',border:'1px solid #ccc'}} />)}
 </div>
 <button onClick={handleSubmit}
+disabled={submitting}
 style={{padding:'10px 24px',background:'#4A148C',
 color:'white',border:'none',borderRadius:'4px',
 cursor:'pointer',fontSize:'14px'}}>
-Submit Ticket
+{submitting ? 'Submitting...' : 'Submit Ticket'}
 </button>
 </div>
 );

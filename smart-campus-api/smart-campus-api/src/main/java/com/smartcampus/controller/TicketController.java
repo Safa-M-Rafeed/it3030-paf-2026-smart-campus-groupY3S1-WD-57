@@ -58,13 +58,18 @@ return ResponseEntity.ok(ApiResponse.success(
 ticketService.getTickets(user, status),
 "Tickets fetched"));
 }
-// GET /api/tickets/{id} — single ticket with attachments
 @GetMapping("/{id}")
 public ResponseEntity<ApiResponse<?>> getTicket(
-@PathVariable("id") Long id) {
-return ResponseEntity.ok(ApiResponse.success(
-ticketService.getById(id), "Ticket fetched"));
+        @PathVariable("id") Long id,
+        Authentication auth) {
+
+    User user = (User) auth.getPrincipal();
+
+    return ResponseEntity.ok(ApiResponse.success(
+            ticketService.getByIdForUser(id, user),
+            "Ticket fetched"));
 }
+  
 // PUT /api/tickets/{id}/status — TECH or ADMIN
 @PutMapping("/{id}/status")
 public ResponseEntity<ApiResponse<?>> updateStatus(
@@ -87,7 +92,19 @@ public ResponseEntity<ApiResponse<?>> assign(
 return ResponseEntity.ok(ApiResponse.success(
 ticketService.assignTechnician(id, technicianId),
 "Technician assigned"));
-}// POST /api/tickets/{id}/comments — any authenticated user
+}
+
+// DELETE /api/tickets/{id} — owner or ADMIN
+@DeleteMapping("/{id}")
+public ResponseEntity<ApiResponse<?>> deleteTicket(
+@PathVariable Long id,
+Authentication auth) {
+User user = (User) auth.getPrincipal();
+ticketService.deleteTicket(id, user);
+return ResponseEntity.ok(ApiResponse.success(null, "Ticket deleted"));
+}
+
+// POST /api/tickets/{id}/comments — any authenticated user
 @PostMapping("/{id}/comments")
 public ResponseEntity<ApiResponse<?>> addComment(
 @PathVariable("id") Long id,

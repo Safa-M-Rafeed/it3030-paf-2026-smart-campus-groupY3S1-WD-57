@@ -13,12 +13,22 @@ HIGH:'#B71C1C', CRITICAL:'#4A148C'
 export default function TicketListPage() {
 const [tickets, setTickets] = useState([]);
 const [statusFilter, setStatusFilter] = useState('');
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState('');
 const { token, user } = useContext(AuthContext);
 const navigate = useNavigate();
 useEffect(() => {
+if (!token) return;
+setLoading(true);
+setError('');
 getTickets(token, statusFilter)
-.then(res => setTickets(res.data.data || []));
-}, [statusFilter]);
+.then(res => setTickets(res.data.data || []))
+.catch((e) => {
+setTickets([]);
+setError(e.response?.data?.message || 'Failed to load tickets');
+})
+.finally(() => setLoading(false));
+}, [token, statusFilter]);
 const badge = (text, colorMap) => (
 <span style={{
 background: colorMap[text] || '#424242',
@@ -49,6 +59,8 @@ style={{padding:'6px 10px',marginBottom:'16px'}}>
 .map(s=><option key={s}>{s}</option>)}
 </select>
 )}
+{loading && <p style={{marginBottom:'12px'}}>Loading tickets...</p>}
+{error && <p style={{marginBottom:'12px', color:'#b42318'}}>{error}</p>}
 <table style={{width:'100%',borderCollapse:'collapse'}}>
 <thead>
 <tr style={{background:'#4A148C',color:'white'}}>
@@ -78,6 +90,13 @@ View
 </button>
 </td></tr>
 ))}
+{!loading && tickets.length === 0 && (
+<tr>
+<td colSpan={7} style={{padding:'16px', color:'#6b7280'}}>
+No tickets found for your role yet.
+</td>
+</tr>
+)}
 </tbody>
 </table>
 </div>

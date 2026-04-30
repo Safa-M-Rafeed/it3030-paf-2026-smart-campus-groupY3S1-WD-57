@@ -1,4 +1,5 @@
 package com.smartcampus.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public class TicketComment {
 private Long id;
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "ticket_id", nullable = false)
+@JsonIgnore
 private IncidentTicket ticket;
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "author_id", nullable = false)

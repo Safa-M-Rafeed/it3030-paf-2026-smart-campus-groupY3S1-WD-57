@@ -25,7 +25,7 @@ svc.getForUser(user.getId()),
 // PUT /api/notifications/{id}/read
 @PutMapping("/{id}/read")
 public ResponseEntity<ApiResponse<?>> markAsRead(
-@PathVariable Long id,
+@PathVariable("id") Long id,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.ok(ApiResponse.success(
@@ -43,7 +43,7 @@ null, "All marked as read"));
 // DELETE /api/notifications/{id}
 @DeleteMapping("/{id}")
 public ResponseEntity<ApiResponse<?>> delete(
-@PathVariable Long id,
+@PathVariable("id") Long id,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 svc.delete(id, user.getId());
@@ -64,5 +64,17 @@ public ResponseEntity<ApiResponse<?>> triggerEvent(
     return ResponseEntity.ok(ApiResponse.success(
             svc.triggerEvent(req, actor),
             "Notification event triggered"));
+}
+
+// POST /api/notifications/demo/seed
+// Demo helper endpoint to quickly populate all required Module D notification types.
+@PostMapping("/demo/seed")
+public ResponseEntity<ApiResponse<?>> seedDemoNotifications(
+        Authentication auth
+) {
+    User user = (User) auth.getPrincipal();
+    return ResponseEntity.ok(ApiResponse.success(
+            svc.seedDemoNotificationsForUser(user),
+            "Demo notifications generated"));
 }
 }

@@ -6,12 +6,7 @@ headers: { Authorization: `Bearer ${token}` }
 });
 // Create ticket with file attachments
 export const createTicket = (formData, token) =>
-axios.post(BASE, formData, {
-headers: {
-Authorization: `Bearer ${token}`,
-'Content-Type': 'multipart/form-data'
-}
-});
+axios.post(BASE, formData, authHeader(token));
 // Get tickets (own or all based on role)
 export const getTickets = (token, status = '') =>
 axios.get(`${BASE}${status ? '?status='+status : ''}`,

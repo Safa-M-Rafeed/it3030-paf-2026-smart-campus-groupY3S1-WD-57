@@ -8,17 +8,20 @@ export default function NotificationBell() {
   const [activeNotification, setActiveNotification] = useState(null);
   const { token } = useContext(AuthContext);
 
+  const loadNotifications = () => {
+    return axios.get('/api/notifications', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+      setNotifications(res.data.data || []);
+    })
+    .catch(err => console.error("Failed to fetch notifications", err));
+  };
+
   // 1. Fetch notifications from the backend
   useEffect(() => {
     if (token) {
-      axios.get('/api/notifications', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        // Backend returns ApiResponse with data field
-        setNotifications(res.data.data || []);
-      })
-      .catch(err => console.error("Failed to fetch notifications", err));
+      loadNotifications();
     }
   }, [token]);
 
@@ -48,6 +51,16 @@ export default function NotificationBell() {
     .catch(err => console.error("Mark all failed", err));
   };
 
+  const seedDemoNotifications = () => {
+    axios.post('/api/notifications/demo/seed', {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(() => {
+      loadNotifications();
+    })
+    .catch(err => console.error("Demo seed failed", err));
+  };
+
   return (
     <div className="nb-wrap">
       {/* The Bell Icon / Button */}
@@ -68,9 +81,9 @@ export default function NotificationBell() {
         <div className="nb-panel">
           <div className="nb-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>Notifications</span>
-            {notifications.length > 0 && unreadCount > 0 && (
+            <div style={{ display: 'flex', gap: '6px' }}>
               <button
-                onClick={markAllRead}
+                onClick={seedDemoNotifications}
                 style={{
                   border: '1px solid #d8ccb8',
                   background: '#fff',
@@ -82,9 +95,26 @@ export default function NotificationBell() {
                   cursor: 'pointer'
                 }}
               >
-                Mark all read
+                Add demo
               </button>
-            )}
+              {notifications.length > 0 && unreadCount > 0 && (
+                <button
+                  onClick={markAllRead}
+                  style={{
+                    border: '1px solid #d8ccb8',
+                    background: '#fff',
+                    color: '#6a5746',
+                    fontSize: '10px',
+                    letterSpacing: '0.8px',
+                    textTransform: 'uppercase',
+                    padding: '3px 6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Mark all read
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="nb-list">

@@ -1,4 +1,5 @@
 package com.smartcampus.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ public class TicketAttachment {
 private Long id;
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "ticket_id", nullable = false)
+@JsonIgnore
 private IncidentTicket ticket;
 // Relative path stored in DB: e.g. 'uploads/abc123.jpg'
 @Column(name = "file_path", nullable = false)

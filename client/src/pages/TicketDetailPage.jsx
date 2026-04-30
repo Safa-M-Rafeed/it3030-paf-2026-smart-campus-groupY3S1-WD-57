@@ -12,10 +12,20 @@ HIGH:'#B71C1C',CRITICAL:'#4A148C'};
 export default function TicketDetailPage() {
 const { id } = useParams();
 const [ticket, setTicket] = useState(null);
+const [error, setError] = useState('');
 const { token, user } = useContext(AuthContext);
 const load = () =>
-getTicket(id, token).then(r => setTicket(r.data.data));
-useEffect(() => { load(); }, [id]);
+getTicket(id, token)
+.then(r => {
+setError('');
+setTicket(r.data.data);
+})
+.catch((e) => {
+setTicket(null);
+setError(e.response?.data?.message || 'Failed to load ticket');
+});
+useEffect(() => { if (token) load(); }, [id, token]);
+if (error) return <p style={{padding:'24px', color:'#b42318'}}>{error}</p>;
 if (!ticket) return <p style={{padding:'24px'}}>Loading...</p>;
 const canUpdate = user?.role==='ADMIN' ||
 (user?.role==='TECHNICIAN' &&

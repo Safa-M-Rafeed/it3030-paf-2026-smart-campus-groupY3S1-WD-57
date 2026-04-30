@@ -483,6 +483,318 @@
             "url": {
               "raw": "{{baseUrl}}/api/notifications/read-all",
               "host": [
+      {
+        "name": "Booking Endpoints",
+        "item": [
+          {
+            "name": "Create Booking",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"facilityId\": 1,\n  \"date\": \"2026-05-01\",\n  \"startTime\": \"09:00:00\",\n  \"endTime\": \"11:00:00\",\n  \"purpose\": \"Project team booking for report discussion\",\n  \"attendees\": 8\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings"
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('jwtToken')) {",
+                    "  throw new Error('Set jwtToken in environment before running booking requests.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                    "const json = pm.response.json();",
+                    "pm.test('Booking id returned', function () {",
+                    "  pm.expect(json.data).to.have.property('id');",
+                    "});",
+                    "pm.environment.set('bookingId', json.data.id);"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Get My Bookings",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings/my",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings",
+                  "my"
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('jwtToken')) {",
+                    "  throw new Error('Set jwtToken in environment before running booking requests.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Get All Bookings (Admin)",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{adminJwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings?status=PENDING",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings"
+                ],
+                "query": [
+                  {
+                    "key": "status",
+                    "value": "PENDING"
+                  }
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('adminJwtToken')) {",
+                    "  throw new Error('Set adminJwtToken in environment before running admin booking requests.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Approve Booking (Admin)",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{adminJwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/approve",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings",
+                  "{{bookingId}}",
+                  "approve"
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('adminJwtToken')) {",
+                    "  throw new Error('Set adminJwtToken in environment before running admin booking requests.');",
+                    "}",
+                    "if (!pm.environment.get('bookingId')) {",
+                    "  throw new Error('Run Create Booking first to set bookingId.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Reject Booking (Admin)",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{adminJwtToken}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"reason\": \"Facility unavailable for the requested time slot\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/reject",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings",
+                  "{{bookingId}}",
+                  "reject"
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('adminJwtToken')) {",
+                    "  throw new Error('Set adminJwtToken in environment before running admin booking requests.');",
+                    "}",
+                    "if (!pm.environment.get('bookingId')) {",
+                    "  throw new Error('Run Create Booking first to set bookingId.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Cancel Booking",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwtToken}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/cancel",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "api",
+                  "bookings",
+                  "{{bookingId}}",
+                  "cancel"
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "exec": [
+                    "if (!pm.environment.get('jwtToken')) {",
+                    "  throw new Error('Set jwtToken in environment before running booking requests.');",
+                    "}",
+                    "if (!pm.environment.get('bookingId')) {",
+                    "  throw new Error('Run Create Booking first to set bookingId.');",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          }
+        ]
+      },
                 "{{baseUrl}}"
               ],
               "path": [

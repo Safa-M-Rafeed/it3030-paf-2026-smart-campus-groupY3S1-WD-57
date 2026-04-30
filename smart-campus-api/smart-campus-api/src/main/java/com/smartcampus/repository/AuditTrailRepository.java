@@ -9,4 +9,6 @@ import java.util.List;
 public interface AuditTrailRepository extends JpaRepository<AuditTrailEntry, Long> {
     List<AuditTrailEntry> findAllByOrderByCreatedAtDesc();
     List<AuditTrailEntry> findByCreatedAtBetweenOrderByCreatedAtDesc(LocalDateTime from, LocalDateTime to);
+    List<AuditTrailEntry> findByEntityAndActionTypeAndCreatedAtBetween(String entity, String actionType, LocalDateTime from, LocalDateTime to);
+    boolean existsByActionTypeAndTargetItem(String actionType, String targetItem);
 }

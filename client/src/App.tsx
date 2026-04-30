@@ -16,6 +16,10 @@ import TicketDetailPage from './pages/TicketDetailPage';
 import TicketFormPage from './pages/TicketFormPage';
 import AuditTrailPage from './pages/AuditTrailPage';
 import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
+import SystemHealthStatusBoardPage from './pages/SystemHealthStatusBoardPage';
+import MostActiveUsersReportPage from './pages/MostActiveUsersReportPage';
+import GoalsPage from './pages/GoalsPage';
+import CostManagementPage from './pages/CostManagementPage';
 
 const BookingsPage = () => <div className="p-8"><h1 className="text-xl font-semibold">Bookings</h1><p className="mt-2 text-gray-600">Booking workflow integration point (Module B).</p></div>;
 
@@ -38,17 +42,25 @@ const reportOptions = [
     path: '/reports/report-export',
     accent: 'from-amber-700 via-orange-700 to-rose-700',
   },
+  {
+    title: 'System Health Status Board',
+    desc: 'View live system health metrics, record counts, and operational risk indicators.',
+    path: '/reports/system-health-status-board',
+    accent: 'from-indigo-700 via-blue-700 to-cyan-700',
+  },
+  {
+    title: '🎯 Goal & Target Setting',
+    desc: 'Set monthly performance targets and track progress with colour-coded status rings.',
+    path: '/reports/goals',
+    accent: 'from-violet-700 via-purple-700 to-fuchsia-700',
+  },
+  {
+    title: '💰 Cost Management',
+    desc: 'Assign campus expenses, calculate totals by date range, and export a cost summary PDF.',
+    path: '/reports/cost-management',
+    accent: 'from-emerald-800 via-emerald-700 to-teal-600',
+  },
 ];
-
-const ReportSectionPage = ({ title, description }: { title: string; description: string }) => (
-  <div className="mx-auto max-w-4xl p-8">
-    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Module F</p>
-      <h1 className="mt-3 text-3xl font-semibold text-slate-900">{title}</h1>
-      <p className="mt-3 text-slate-600">{description}</p>
-    </div>
-  </div>
-);
 
 const ReportsPage = () => (
   <div className="mx-auto max-w-6xl p-8">
@@ -60,7 +72,7 @@ const ReportsPage = () => (
       </p>
     </div>
 
-    <div className="grid gap-5 md:grid-cols-3">
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
       {reportOptions.map((option) => (
         <Link
           key={option.path}
@@ -165,10 +177,25 @@ function App() {
 
             <Route path="/reports/report-export" element={
               <ProtectedRoute requiredRole="ADMIN">
-                <ReportSectionPage
-                  title="📄 Report Export"
-                  description="Generate downloadable report outputs for sharing, review, or archival."
-                />
+                <MostActiveUsersReportPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/system-health-status-board" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <SystemHealthStatusBoardPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/goals" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <GoalsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/reports/cost-management" element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <CostManagementPage />
               </ProtectedRoute>
             } />
             

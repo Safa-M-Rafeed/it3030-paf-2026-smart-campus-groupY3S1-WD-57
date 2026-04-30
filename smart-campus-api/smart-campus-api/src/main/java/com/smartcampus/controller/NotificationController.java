@@ -25,7 +25,7 @@ svc.getForUser(user.getId()),
 // PUT /api/notifications/{id}/read
 @PutMapping("/{id}/read")
 public ResponseEntity<ApiResponse<?>> markAsRead(
-@PathVariable Long id,
+@PathVariable("id") Long id,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 return ResponseEntity.ok(ApiResponse.success(
@@ -43,7 +43,7 @@ null, "All marked as read"));
 // DELETE /api/notifications/{id}
 @DeleteMapping("/{id}")
 public ResponseEntity<ApiResponse<?>> delete(
-@PathVariable Long id,
+@PathVariable("id") Long id,
 Authentication auth) {
 User user = (User) auth.getPrincipal();
 svc.delete(id, user.getId());
